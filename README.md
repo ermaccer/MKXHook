@@ -32,11 +32,10 @@ Frontend is now no longer locked to 30FPS.
 
 
 # Used stuff
-DirectX 11 graphics hook by **Niemand**
+Base DirectX 11 graphics hook by **Niemand**
 
-HookInit by **Silent**
-
-Dear ImGui **ocornut**
+https://github.com/CookiePLMonster/ModUtils
+https://github.com/ocornut/imgui
 
 
 MKXHook was compiled & tested using Visual Studio 2017.
