@@ -10,6 +10,8 @@ MKXHook requires Ultimate ASI Loader(https://github.com/ThirteenAG/Ultimate-ASI-
 
 ImGui settings (position, size) are saved in imgui.ini in root folder.
 
+Plugin features can be toggled on or off in the .ini.
+
 # Features:
 
 ## Player Character Modifier
@@ -31,7 +33,9 @@ Frontend is now no longer locked to 30FPS.
 
 # Used stuff
 DirectX 11 graphics hook by **Niemand**
+
 HookInit by **Silent**
+
 Dear ImGui **ocornut**
 
 
