@@ -14,7 +14,7 @@ Plugin features can be toggled on or off in the .ini.
 
 # Features:
 
-Press F1 at any time to open the menu.
+Press F1 (default) at any time to open the menu.
 
 ## Player Character Modifier
 Allows you to select any character for any game mode
