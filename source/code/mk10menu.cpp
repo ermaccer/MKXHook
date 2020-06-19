@@ -6,6 +6,7 @@
 #include <imgui.h>
 #include "eSettingsManager.h"
 
+bool bShowMessageError = 0;
 
 // TODO: replace with auto scan?
 
@@ -76,6 +77,9 @@ void MK10Menu::Initialize()
 {
 	bIsActive = false;
 	bPlayer1ModifierEnabled = false;
+	bPlayer2ModifierEnabled = false;
+	bInfiniteEasyFatalities = false;
+	bInfiniteSkipFights = false;
 	iCurrentTab = 0;
 	sprintf(szPlayer1ModifierCharacter, szCharacters[0]);
 	sprintf(szPlayer2ModifierCharacter, szCharacters[0]);
@@ -100,8 +104,14 @@ void MK10Menu::Draw()
 	ImGui::Begin("MKXHook by ermaccer");
 	if (ImGui::Button("Character Modifier")) iCurrentTab = TAB_CHARACTER_MODIFIER;
 	ImGui::SameLine();
+	if (ImGui::Button("Stage Modifier")) iCurrentTab = TAB_STAGE_MODIFIER;
+	ImGui::SameLine();
+	if (ImGui::Button("Cheats")) iCurrentTab = TAB_CHEATS;
+	ImGui::SameLine();
 	if (ImGui::Button("Misc.")) iCurrentTab = TAB_MISC;
 	ImGui::Separator();
+
+
 	if (iCurrentTab == TAB_CHARACTER_MODIFIER)
 	{
 		ImGui::Checkbox("Enable Player 1 Modifier", &bPlayer1ModifierEnabled);
@@ -133,7 +143,15 @@ void MK10Menu::Draw()
 			}
 			ImGui::EndCombo();
 		}
+
 		
+	}
+	if (iCurrentTab == TAB_STAGE_MODIFIER)
+	{
+		bool reset = ImGui::Button("Reset Stage Objects");
+		if (reset)
+			MK10::ResetStageInteractables();
+
 	}
 	if (iCurrentTab == TAB_MISC)
 	{
@@ -141,6 +159,17 @@ void MK10Menu::Draw()
 		ImGui::SameLine(); ShowHelpMarker("Shortcut - TODO");
 		if (swap)
 			((void(__fastcall*)())GetMKXAddr(0x14055AD40))();
+
+		bool unlock = ImGui::Button("Unlock Costumes");
+		ImGui::SameLine(); ShowHelpMarker("Execute this option in the Crypt");
+		if (unlock)
+		{
+			int64 gallery = ((int64(__fastcall*)())GetMKXAddr(0x14047EAB0))();
+
+			if (gallery)
+			((void(__fastcall*)(int64))GetMKXAddr(0x14049D000))(gallery);
+		}
+
 
 		ImGui::Separator();
 		ImGui::Text("Gamespeed Control");
@@ -153,6 +182,15 @@ void MK10Menu::Draw()
 		ImGui::SliderFloat("Speed", &fSlowMotionSpeed, 0.0f, 2.0f);
 		ImGui::InputInt("Ticks", &iSlowMotionTicks, 1000,10000);
 
+
+	}
+	if (iCurrentTab == TAB_CHEATS)
+	{
+		ImGui::Text("Player 1");
+		ImGui::Separator();
+		ImGui::Checkbox("Infinite Health", &bInfiniteHealthPlayer1);
+		ImGui::Checkbox("Infinite Super Meter",&bInfiniteSuperBarPlayer1);
+		ImGui::Separator();
 	}
 	ImGui::End();
 }
@@ -172,3 +210,16 @@ bool MK10Menu::GetActiveState()
 	return bIsActive;
 }
 
+void PushErrorMessage(const char * message)
+{
+	if (!bShowMessageError)
+	{
+		bShowMessageError = true;
+		ImGui::Begin("ERROR", &bShowMessageError);
+		ImGui::Text(message);
+		if (ImGui::Button("OK"))
+			bShowMessageError = false;
+		ImGui::End();
+	}
+
+}

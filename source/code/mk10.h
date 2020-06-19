@@ -1,20 +1,21 @@
 #pragma once
 #include "mk10utils.h"
 
-// in case it gets updated
+// in case it gets updated - defines
 #define GFG_GAME_INFO 0x1430D4950
+#define GALLERY_INFO 0x14330A450
 
 enum  PLAYER_NUM
 {
-	INVALID_PLAYER_NUM = 0xFFFFFFFF,
-	PLAYER1 = 0x0,
-	PLAYER2 = 0x1,
-	PLAYER3 = 0x2,
-	PLAYER4 = 0x3,
-	MAX_PLAYERS = 0x4,
-	CPU_PLAYER = 0x5,
-	NOT_CPU_PLAYER = 0x6,
-	BACKGROUND_PLAYER = 0x7,
+	INVALID_PLAYER_NUM = -1,
+	PLAYER1,
+	PLAYER2,
+	PLAYER3,
+	PLAYER4,
+	MAX_PLAYERS,
+	CPU_PLAYER,
+	NOT_CPU_PLAYER,
+	BACKGROUND_PLAYER
 };
 
 struct FVector
@@ -30,6 +31,10 @@ namespace MK10 {
 	const char* GetGameName();
 	void SetCharacter(PLAYER_NUM plr, const char* character);
 	void SlowGameTimeForXTicks(float speed, int ticks);
+	void ResetStageInteractables();
+
+	int64 GetCharacterObject(PLAYER_NUM plr);
+	int64 GetCharacterInfo(PLAYER_NUM plr);
 }
 
 
@@ -43,6 +48,10 @@ namespace MK10Hooks {
 	void __fastcall HookStartupFightRecording();
 	int64 __fastcall HookCheckIfCharacterFemale(const char* character);
 	int64 HookCheckFatalityStatus();
+	void __fastcall HookDLCCellAmount(int64 ptr, int cells, int64 a3, int a4);
+	int64 __fastcall HookIsEasyFatalityAvailable(const char* name);
+
+	void __fastcall  Hook30To60Swap(int64 game, int a2);
 }
 
 

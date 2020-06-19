@@ -14,4 +14,7 @@ void eSettingsManager::Init()
 	bEnable60FPSFrontend = ini.ReadBoolean("Settings", "bEnable60FPSFrontend", false);
 
 	iHookMenuOpenKey = ini.ReadInteger("Settings", "iHookMenuOpenKey", VK_F1);
+	iAvailableDLCCells = ini.ReadInteger("Settings", "iAvailableDLCCells", -1);
+	
+	//bDisableComboDamageScaling = ini.ReadBoolean("Settings",)
 }

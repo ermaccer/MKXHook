@@ -12,8 +12,10 @@ public:
 	bool bEnableNPCFatalities;
 	bool bDisableAssetHashChecking;
 	bool bEnableConsoleWindow;
+	bool bDisableComboDamageScaling;
 
 	int iHookMenuOpenKey;
+	int iAvailableDLCCells;
 
 };
 
