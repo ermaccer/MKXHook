@@ -17,6 +17,8 @@ using namespace hook;
 
 int64 __fastcall GenericTrueReturn() { return 1; }
 int64 __fastcall GenericFalseReturn() { return 0; }
+void __fastcall  GenericDummy() {}
+
 
 const char* __fastcall SwapGameName()
 {
@@ -33,12 +35,16 @@ void OnInitializeHook()
 		Patch<char>(GetMKXAddr(0x1404950F7 + 1), 0);
 	}
 
-
-
 	Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
 	InjectHook(GetMKXAddr(0x14049C5DD), tramp->Jump(MK10Hooks::HookProcessStuff));
 	InjectHook(GetMKXAddr(0x1413708D8), tramp->Jump(SwapGameName));
 	InjectHook(GetMKXAddr(0x140497FE9), tramp->Jump(MK10Hooks::HookStartupFightRecording));
+
+	if (!(SettingsMgr->iAvailableDLCCells == -1))
+	{
+		InjectHook(GetMKXAddr(0x14004BAB9), tramp->Jump(MK10Hooks::HookDLCCellAmount));
+		Patch<int>(GetMKXAddr(0x14069A662 + 1), SettingsMgr->iAvailableDLCCells);
+	}
 
 	if (SettingsMgr->bDisableAssetHashChecking)
 		InjectHook(GetMKXAddr(0x14002BF69), tramp->Jump(GenericFalseReturn));
@@ -55,9 +61,5 @@ void OnInitializeHook()
 		InjectHook(GetMKXAddr(0x14008194E), tramp->Jump(MK10Hooks::HookCheckIfCharacterFemale));
 		InjectHook(GetMKXAddr(0x1401E7E0C), tramp->Jump(MK10Hooks::HookCheckIfCharacterFemale));
 	}
-
-
-
-
 
 }

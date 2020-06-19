@@ -49,7 +49,6 @@ DWORD_PTR* pDeviceContextVTable = NULL;
 
 // Boolean
 BOOL g_bInitialised = false;
-bool g_ShowMenu = false;
 bool g_PresentHooked = false;
 
 
@@ -66,6 +65,9 @@ void StartConsole()
 		freopen("CONOUT$", "w", stderr);
 		freopen("CONIN$", "r", stdin);
 	}
+
+	if (SettingsMgr->bDisableAssetHashChecking)
+		printf("NOTE: With disabled hash checking you won't be able to play online\n nor use Faction Wars (private rooms still work though)\n");
 
 	printf("MKXHook::OnInitializeHook() | Begin!\n");
 	printf("MKXHook::OnInitializeHook() | Game detected: %s\n", MK10::GetGameName());

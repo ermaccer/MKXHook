@@ -87,6 +87,9 @@
     <ClInclude Include="code\eSettingsManager.h">
       <Filter>Header Files\code</Filter>
     </ClInclude>
+    <ClInclude Include="dxhook.h">
+      <Filter>Header Files\dxhook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

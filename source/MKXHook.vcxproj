@@ -99,6 +99,7 @@
     <ClInclude Include="code\mk10menu.h" />
     <ClInclude Include="code\mk10utils.h" />
     <ClInclude Include="code\mkxhook.h" />
+    <ClInclude Include="dxhook.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
