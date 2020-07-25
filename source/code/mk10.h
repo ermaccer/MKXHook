@@ -25,7 +25,11 @@ struct FVector
 	float Z;
 };
 
-
+struct FRotator {
+	int Pitch;
+	int Yaw;
+	int Roll;
+};
 
 namespace MK10 {
 	const char* GetGameName();
@@ -35,6 +39,8 @@ namespace MK10 {
 
 	int64 GetCharacterObject(PLAYER_NUM plr);
 	int64 GetCharacterInfo(PLAYER_NUM plr);
+
+	int64 GetCharacterInfo2(PLAYER_NUM plr);
 }
 
 
@@ -49,6 +55,8 @@ namespace MK10Hooks {
 	int64 __fastcall HookCheckIfCharacterFemale(const char* character);
 	int64 HookCheckFatalityStatus();
 	void __fastcall HookDLCCellAmount(int64 ptr, int cells, int64 a3, int a4);
+	void __fastcall HookCamSetPos(int64 ptr, FVector* pos);
+	void __fastcall HookCamSetRot(int64 ptr, FRotator* rot);
 	int64 __fastcall HookIsEasyFatalityAvailable(const char* name);
 
 	void __fastcall  Hook30To60Swap(int64 game, int a2);

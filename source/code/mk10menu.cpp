@@ -9,7 +9,6 @@
 bool bShowMessageError = 0;
 
 // TODO: replace with auto scan?
-
 const char* szCharacters[] = {
 	// place npcs first for easy access
 	"Rain_A",
@@ -52,8 +51,10 @@ const char* szCharacters[] = {
 	"CHAR_Tremor_A",
 	"Char_Triborg_A",
 
-
 };
+
+
+
 
 static int64 timer = GetTickCount64();
 
@@ -80,6 +81,18 @@ void MK10Menu::Initialize()
 	bPlayer2ModifierEnabled = false;
 	bInfiniteEasyFatalities = false;
 	bInfiniteSkipFights = false;
+	bInfiniteHealthPlayer1 = false;
+	bInfiniteHealthPlayer2 = false;
+	bInfiniteSuperBarPlayer1 = false;
+	bInfiniteSuperBarPlayer2 = false;
+	bPlayer1TraitEnabled = false;
+	bPlayer2TraitEnabled = false;
+	bEnableRandomFights = false;
+	iPlayer1Trait = 1;
+	iPlayer2Trait = 1;
+	fFreeCameraSpeed = 5.25f;
+	iFreeCameraRotSpeed = 120;
+	bStopTimer = false;
 	iCurrentTab = 0;
 	sprintf(szPlayer1ModifierCharacter, szCharacters[0]);
 	sprintf(szPlayer2ModifierCharacter, szCharacters[0]);
@@ -101,10 +114,12 @@ void MK10Menu::Process()
 void MK10Menu::Draw()
 {
 	ImGui::GetIO().MouseDrawCursor = true;
-	ImGui::Begin("MKXHook by ermaccer");
+	ImGui::Begin("MKXHook by ermaccer (0.3)");
 	if (ImGui::Button("Character Modifier")) iCurrentTab = TAB_CHARACTER_MODIFIER;
 	ImGui::SameLine();
 	if (ImGui::Button("Stage Modifier")) iCurrentTab = TAB_STAGE_MODIFIER;
+	ImGui::SameLine();
+	if (ImGui::Button("Camera Control")) iCurrentTab = TAB_CAMERA;
 	ImGui::SameLine();
 	if (ImGui::Button("Cheats")) iCurrentTab = TAB_CHEATS;
 	ImGui::SameLine();
@@ -116,6 +131,8 @@ void MK10Menu::Draw()
 	{
 		ImGui::Checkbox("Enable Player 1 Modifier", &bPlayer1ModifierEnabled);
 		ImGui::SameLine(); ShowHelpMarker("It does not matter who you choose at character select screen, character will be changed upon match start. Works in all game modes");
+		ImGui::Checkbox("Enable Player 1 Variation Modifier", &bPlayer1TraitEnabled);
+
 
 		if (ImGui::BeginCombo("Player 1 Character", szPlayer1ModifierCharacter))
 		{
@@ -129,8 +146,14 @@ void MK10Menu::Draw()
 			}
 			ImGui::EndCombo();
 		}
+		ImGui::SliderInt("Variation", &iPlayer1Trait, 1, 3);
+		ImGui::Separator();
 		ImGui::Checkbox("Enable Player 2 Modifier", &bPlayer2ModifierEnabled);
-		ImGui::SameLine(); ShowHelpMarker("It does not matter who you choose at character select screen, character will be changed upon match start. Works in all game modes. NB: Make sure you do not replace Shinnok boss fight, it'll crash.");
+		ImGui::SameLine(); ShowHelpMarker("NB: Make sure you do not replace Shinnok boss fight, it'll crash.");
+		ImGui::Checkbox("Enable Player 2 Variation Modifier", &bPlayer2TraitEnabled);
+
+
+
 		if (ImGui::BeginCombo("Player 2 Character", szPlayer2ModifierCharacter))
 		{
 			for (int n = 0; n < IM_ARRAYSIZE(szCharacters); n++)
@@ -143,8 +166,24 @@ void MK10Menu::Draw()
 			}
 			ImGui::EndCombo();
 		}
+		ImGui::SliderInt("Variation ", &iPlayer2Trait, 1, 3);
+		ImGui::Separator();
+		ImGui::Checkbox("Enable Random Fights", &bEnableRandomFights);
+		ImGui::SameLine(); ShowHelpMarker("This will randomize P1 character each fight, Costumes are not available as they would pad list too much");
 
 		
+	}
+	if (iCurrentTab == TAB_CAMERA)
+	{
+		ImGui::Checkbox("Custom Camera Position", &bCustomCamera);
+		ImGui::InputFloat3("X | Y | Z", &camPos.X);
+		ImGui::Checkbox("Custom Camera Rotation", &bCustomCameraRot);
+		ImGui::InputInt3("Pitch | Yaw | Roll", &camRot.Pitch);
+		ImGui::Checkbox("Enable Freecam", &bFreeCameraMovement);
+		ImGui::SameLine(); ShowHelpMarker("Requires both toggles enabled! \nControls:\nT - X-\nG - X+\nF - Y-\nH - Y+\nV - Yaw-\nB - Yaw+");
+		ImGui::InputFloat("Freecam Speed", &fFreeCameraSpeed);
+		ImGui::InputInt("Freecam Rotation Speed", &iFreeCameraRotSpeed);
+
 	}
 	if (iCurrentTab == TAB_STAGE_MODIFIER)
 	{
@@ -183,6 +222,7 @@ void MK10Menu::Draw()
 		ImGui::InputInt("Ticks", &iSlowMotionTicks, 1000,10000);
 
 
+
 	}
 	if (iCurrentTab == TAB_CHEATS)
 	{
@@ -191,6 +231,13 @@ void MK10Menu::Draw()
 		ImGui::Checkbox("Infinite Health", &bInfiniteHealthPlayer1);
 		ImGui::Checkbox("Infinite Super Meter",&bInfiniteSuperBarPlayer1);
 		ImGui::Separator();
+
+		ImGui::Text("Player 2");
+		ImGui::Separator();
+		ImGui::Checkbox("Infinite Health ", &bInfiniteHealthPlayer2);
+		ImGui::Checkbox("Infinite Super Meter ", &bInfiniteSuperBarPlayer2);
+		ImGui::Separator();
+		ImGui::Checkbox("Infinite Timer", &bStopTimer);
 	}
 	ImGui::End();
 }
