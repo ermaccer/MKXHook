@@ -33,6 +33,10 @@ void OnInitializeHook()
 	{
 		Patch<char>(GetMKXAddr(0x1404950E6 + 1), 0);
 		Patch<char>(GetMKXAddr(0x1404950F7 + 1), 0);
+		Patch<char>(GetMKXAddr(0x142639FE4), '6');
+		Patch<char>(GetMKXAddr(0x1428C6580), '6');
+		Patch<char>(GetMKXAddr(0x140E8F4CB + 2), 1);
+		Patch<char>(GetMKXAddr(0x140F7DE89 + 2), 1);
 	}
 
 	Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
@@ -61,5 +65,8 @@ void OnInitializeHook()
 		InjectHook(GetMKXAddr(0x14008194E), tramp->Jump(MK10Hooks::HookCheckIfCharacterFemale));
 		InjectHook(GetMKXAddr(0x1401E7E0C), tramp->Jump(MK10Hooks::HookCheckIfCharacterFemale));
 	}
+	InjectHook(GetMKXAddr(0x14018ED48), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14018ED3C), tramp->Jump(MK10Hooks::HookCamSetRot));
+	//Nop(GetMKXAddr(0x140862E61), 5);
 
 }
