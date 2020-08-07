@@ -15,7 +15,17 @@ public:
 	bool bDisableComboDamageScaling;
 
 	int iHookMenuOpenKey;
+	// free camera keys
+	int iFreeCameraKeyXPlus;
+	int iFreeCameraKeyXMinus;
+	int iFreeCameraKeyYPlus;
+	int iFreeCameraKeyYMinus;
+	int iFreeCameraKeyYawPlus;
+	int iFreeCameraKeyYawMinus;
+	int iFreeCameraKeyZPlus;
+	int iFreeCameraKeyZMinus;
 	int iAvailableDLCCells;
+
 
 };
 

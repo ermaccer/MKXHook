@@ -40,7 +40,9 @@ namespace MK10 {
 	int64 GetCharacterObject(PLAYER_NUM plr);
 	int64 GetCharacterInfo(PLAYER_NUM plr);
 
-	int64 GetCharacterInfo2(PLAYER_NUM plr);
+	void  GetCharacterPosition(FVector* vec, PLAYER_NUM plr);
+	void  SetCharacterPosition(FVector* vec, PLAYER_NUM plr);
+
 }
 
 

@@ -54,6 +54,26 @@ const char* szCharacters[] = {
 };
 
 
+const char* szCameraModes[TOTAL_CUSTOM_CAMERAS] = {
+	"Third Person",
+	"Third Person #2",
+	"First Person",
+	"First Person Mid"
+};
+
+int GetCamMode(const char* mode)
+{
+	for (int i = 0; i < TOTAL_CUSTOM_CAMERAS; i++)
+	{
+		if (strcmp(mode, szCameraModes[i]) == 0)
+		{
+			return i;
+			break;
+		}
+	}
+	return -1;
+}
+
 
 
 static int64 timer = GetTickCount64();
@@ -88,16 +108,22 @@ void MK10Menu::Initialize()
 	bPlayer1TraitEnabled = false;
 	bPlayer2TraitEnabled = false;
 	bEnableRandomFights = false;
+	bFreezePosition = false;
+	bEnableCustomCameras = false;
+	iCurrentCustomCamera = -1;
 	iPlayer1Trait = 1;
 	iPlayer2Trait = 1;
 	fFreeCameraSpeed = 5.25f;
 	iFreeCameraRotSpeed = 120;
 	bStopTimer = false;
+	bYObtained = false;
 	iCurrentTab = 0;
 	sprintf(szPlayer1ModifierCharacter, szCharacters[0]);
 	sprintf(szPlayer2ModifierCharacter, szCharacters[0]);
+	sprintf(szCurrentCameraOption, szCameraModes[0]);
 	iSlowMotionTicks = 0;
 	fSlowMotionSpeed = 0.0f;
+	fAdjustCam = 30.0f;
 	printf("MKXHook::Initialize() | Menu initialize\n");
 }
 
@@ -114,13 +140,15 @@ void MK10Menu::Process()
 void MK10Menu::Draw()
 {
 	ImGui::GetIO().MouseDrawCursor = true;
-	ImGui::Begin("MKXHook by ermaccer (0.3)");
+	ImGui::Begin("MKXHook by ermaccer (0.4beta)");
 	if (ImGui::Button("Character Modifier")) iCurrentTab = TAB_CHARACTER_MODIFIER;
 	ImGui::SameLine();
 	if (ImGui::Button("Stage Modifier")) iCurrentTab = TAB_STAGE_MODIFIER;
 	ImGui::SameLine();
 	if (ImGui::Button("Camera Control")) iCurrentTab = TAB_CAMERA;
 	ImGui::SameLine();
+//	if (ImGui::Button("Player Control")) iCurrentTab = TAB_PLAYER_CONTROL;
+	//ImGui::SameLine();
 	if (ImGui::Button("Cheats")) iCurrentTab = TAB_CHEATS;
 	ImGui::SameLine();
 	if (ImGui::Button("Misc.")) iCurrentTab = TAB_MISC;
@@ -143,6 +171,7 @@ void MK10Menu::Draw()
 					sprintf(szPlayer1ModifierCharacter, szCharacters[n]);
 					if (is_selected)
 						ImGui::SetItemDefaultFocus();  
+					
 			}
 			ImGui::EndCombo();
 		}
@@ -180,9 +209,48 @@ void MK10Menu::Draw()
 		ImGui::Checkbox("Custom Camera Rotation", &bCustomCameraRot);
 		ImGui::InputInt3("Pitch | Yaw | Roll", &camRot.Pitch);
 		ImGui::Checkbox("Enable Freecam", &bFreeCameraMovement);
-		ImGui::SameLine(); ShowHelpMarker("Requires both toggles enabled! \nControls:\nT - X-\nG - X+\nF - Y-\nH - Y+\nV - Yaw-\nB - Yaw+");
+		ImGui::SameLine(); ShowHelpMarker("Requires both toggles enabled!\n You can configure keys in .ini file.");
 		ImGui::InputFloat("Freecam Speed", &fFreeCameraSpeed);
 		ImGui::InputInt("Freecam Rotation Speed", &iFreeCameraRotSpeed);
+	
+
+		ImGui::Separator();
+
+		ImGui::Checkbox("Custom Cameras", &bEnableCustomCameras);
+
+		if (ImGui::BeginCombo("Mode", szCurrentCameraOption))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(szCameraModes); n++)
+			{
+				bool is_selected = (szCurrentCameraOption == szCameraModes[n]);
+				if (ImGui::Selectable(szCameraModes[n], is_selected))
+					sprintf(szCurrentCameraOption, szCameraModes[n]);
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+
+			}
+			ImGui::EndCombo();
+		}
+		iCurrentCustomCamera = GetCamMode(szCurrentCameraOption);
+		ImGui::InputFloat("FPS Camera Offset", &fAdjustCam);
+
+
+	}
+	if (iCurrentTab == TAB_PLAYER_CONTROL)
+	{
+		if (MK10::GetCharacterObject(PLAYER1))
+		{
+			MK10::GetCharacterPosition(&plrPos, PLAYER1);
+			ImGui::InputFloat3("X | Y | Z", &plrPos.X);
+		}
+		if (MK10::GetCharacterObject(PLAYER2))
+		{
+			MK10::GetCharacterPosition(&plrPos2, PLAYER2);
+			ImGui::InputFloat3("X | Y | Z", &plrPos2.X);
+		}
+
+	
+
 
 	}
 	if (iCurrentTab == TAB_STAGE_MODIFIER)

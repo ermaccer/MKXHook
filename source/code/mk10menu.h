@@ -3,12 +3,20 @@
 enum eTabs {
 	TAB_CHARACTER_MODIFIER,
 	TAB_STAGE_MODIFIER,
+	TAB_CAMERA,
+	TAB_PLAYER_CONTROL,
 	TAB_MISC,
-	TAB_CHEATS,
-	TAB_CAMERA
-
-
+	TAB_CHEATS
 };
+
+enum eCustomCameras {
+	CAMERA_3RDPERSON,
+	CAMERA_3RDPERSON2,
+	CAMERA_1STPERSON,
+	CAMERA_1STPERSON_MID,
+	TOTAL_CUSTOM_CAMERAS
+};
+
 
 // as usual, based on mh2 debug menu
 
@@ -17,22 +25,27 @@ private:
 	bool bIsActive;
 	int  iCurrentTab;
 public:
+	// characters
 	bool bPlayer1ModifierEnabled;
 	bool bPlayer1TraitEnabled;
 	int  iPlayer1Trait;
 	bool bPlayer2ModifierEnabled;
 	bool bPlayer2TraitEnabled;
 	int  iPlayer2Trait;
+	char szPlayer1ModifierCharacter[128] = {};
+	char szPlayer2ModifierCharacter[128] = {};
+
+	// cheats
 	bool bInfiniteEasyFatalities;
 	bool bInfiniteSkipFights;
-
 	bool bStopTimer;
-
 	bool bInfiniteHealthPlayer1;
 	bool bInfiniteSuperBarPlayer1;
+	bool bInfiniteHealthPlayer2;
+	bool bInfiniteSuperBarPlayer2;
 
 
-
+	// camera
 	bool bCustomCamera;
 	bool bCustomCameraRot;
 	FVector camPos;
@@ -40,13 +53,23 @@ public:
 	bool bFreeCameraMovement;
 	float fFreeCameraSpeed;
 	int  iFreeCameraRotSpeed;
-	bool bInfiniteHealthPlayer2;
-	bool bInfiniteSuperBarPlayer2;
+	bool bEnableCustomCameras;
+	int  iCurrentCustomCamera;
+	char szCurrentCameraOption[128];
+	bool bYObtained;
+
+	float fAdjustCam;
+
+	// player 
+	bool bFreezePosition;
+	FVector plrPos;
+	FVector plrPos2;
+
+
 	
 	bool bEnableRandomFights;
 
-	char szPlayer1ModifierCharacter[128] = {};
-	char szPlayer2ModifierCharacter[128] = {};
+
 	int  iSlowMotionTicks;
 	float fSlowMotionSpeed;
 	void Initialize();

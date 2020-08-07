@@ -94,11 +94,21 @@ int64 MK10::GetCharacterInfo(PLAYER_NUM plr)
 	return ((int64(__fastcall*)(int64,PLAYER_NUM))GetMKXAddr(0x140480E30))(gameinfo,plr);
 }
 
-int64 MK10::GetCharacterInfo2(PLAYER_NUM plr)
+void MK10::GetCharacterPosition(FVector * vec, PLAYER_NUM plr)
 {
+	int64 object = GetCharacterInfo(plr);
+	int64 ptr =*(int64*)(object + 32);
+	((int64(__fastcall*)(int64, FVector* ))GetMKXAddr(0x140CAA980))(ptr, vec);
 
-	return int64();
 }
+
+void MK10::SetCharacterPosition(FVector * vec, PLAYER_NUM plr)
+{
+	int64 object = GetCharacterInfo(plr);
+	int64 ptr = *(int64*)(object + 32);
+	((int64(__fastcall*)(int64, FVector*))GetMKXAddr(0x140CBB1A0))(ptr, vec);
+}
+
 
 
 int64 MK10Hooks::IsNPCCharacter(const char * character)
@@ -165,21 +175,32 @@ void __fastcall MK10Hooks::HookProcessStuff()
 
 	if (TheMenu->bFreeCameraMovement)
 	{
-		if (GetAsyncKeyState(84))
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyXPlus))
 			TheMenu->camPos.X += TheMenu->fFreeCameraSpeed;
-		if (GetAsyncKeyState(71))
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyXMinus))
 			TheMenu->camPos.X -= TheMenu->fFreeCameraSpeed;
-		if (GetAsyncKeyState(72))
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYPlus))
 			TheMenu->camPos.Y += TheMenu->fFreeCameraSpeed;
-		if (GetAsyncKeyState(70))
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYMinus))
 			TheMenu->camPos.Y -= TheMenu->fFreeCameraSpeed;
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyZPlus))
+			TheMenu->camPos.Z += TheMenu->fFreeCameraSpeed;
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyZMinus))
+			TheMenu->camPos.Z -= TheMenu->fFreeCameraSpeed;
 
-		if (GetAsyncKeyState(86))
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYawMinus))
 			TheMenu->camRot.Yaw-= TheMenu->iFreeCameraRotSpeed;
-		if (GetAsyncKeyState(66))
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYawPlus))
 			TheMenu->camRot.Yaw += TheMenu->iFreeCameraRotSpeed;
 	}
 
+	if (TheMenu->bFreezePosition)
+	{
+		MK10::SetCharacterPosition(&TheMenu->plrPos, PLAYER1);
+		MK10::SetCharacterPosition(&TheMenu->plrPos, PLAYER2);
+	}
+
+	
 
 	((void(__fastcall*)())GetMKXAddr(0x140CAE620))();
 }
@@ -187,7 +208,8 @@ void __fastcall MK10Hooks::HookProcessStuff()
 void __fastcall MK10Hooks::HookStartupFightRecording()
 {
 	printf("MKXHook::Info() | Starting a new fight!\n");
-
+	TheMenu->bEnableCustomCameras = false;
+	TheMenu->bYObtained = false;
 	// recording call
 	((void(__fastcall*)())GetMKXAddr(0x1403922B0))();
 
@@ -252,28 +274,177 @@ void __fastcall MK10Hooks::HookDLCCellAmount(int64 ptr, int cells, int64 a3, int
 
 void __fastcall MK10Hooks::HookCamSetPos(int64 ptr, FVector* pos)
 {
-	if (!TheMenu->bCustomCamera)
+	float oneTime = 0.0f;
+	if (!TheMenu->bYObtained)
 	{
-		TheMenu->camPos = *pos;
+		oneTime = pos->Y;
+		TheMenu->bYObtained = true;
+	}
+	if (TheMenu->bEnableCustomCameras)
+	{
+		FVector plrPos;
+		FVector p2;
+		MK10::GetCharacterPosition(&plrPos, PLAYER1);
+		MK10::GetCharacterPosition(&p2, PLAYER2);
+		switch (TheMenu->iCurrentCustomCamera)
+		{
+		case CAMERA_3RDPERSON:
+			pos->X = 5;
+			pos->Y = oneTime - 330.0f;
+			pos->Y += plrPos.Y * 0.85f;
+			pos->Z = 210.0f + plrPos.Z;
+
+		if (p2.Y < plrPos.Y)
+			{
+				pos->Y += 600.0f;
+				pos->Z = 210.0f;
+				
+			}
+
+
+			TheMenu->camPos = *pos;
+			break;
+		case CAMERA_3RDPERSON2:
+			pos->X = 5;
+			pos->Y = oneTime - 230.0f;
+			pos->Y += plrPos.Y * 0.85f;
+			pos->Z = 260.0f + plrPos.Z;;
+
+			if (p2.Y < plrPos.Y)
+			{
+				pos->Y += 600.0f;
+				pos->Z = 260.0f;
+			}
+
+
+			TheMenu->camPos = *pos;
+			break;
+		case CAMERA_1STPERSON:
+			pos->X = -10.0f;
+			pos->Y = -230;
+		    pos->Y += plrPos.Y - pos->Y;
+			if (p2.Y < plrPos.Y)
+				pos->Y += TheMenu->fAdjustCam * -1;
+			else
+		     	pos->Y += TheMenu->fAdjustCam;
+			pos->Z = 171.0f + plrPos.Z;
+
+
+			TheMenu->camPos = *pos;
+			break;
+		case CAMERA_1STPERSON_MID:
+			pos->X = 16.0f;
+			pos->Y = -230;
+			pos->Y += plrPos.Y - pos->Y;
+			if (p2.Y < plrPos.Y)
+				pos->Y += 23.0f * -1;
+			else
+				pos->Y += 23.0f;
+			pos->Z = 124.0f + plrPos.Z;
+
+
+			TheMenu->camPos = *pos;
+			break;
+		}
 		((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x14086B8A0))(ptr, pos);
 	}
-	if (TheMenu->bCustomCamera)
+	else
 	{
-		((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x14086B8A0))(ptr, &TheMenu->camPos);
+		if (!TheMenu->bCustomCamera)
+		{
+			TheMenu->camPos = *pos;
+			((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x14086B8A0))(ptr, pos);
+		}
+		else
+			((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x14086B8A0))(ptr, &TheMenu->camPos);
 	}
+
 }
 
 void __fastcall MK10Hooks::HookCamSetRot(int64 ptr, FRotator* rot)
 {
-	if (!TheMenu->bCustomCameraRot)
+	if (TheMenu->bEnableCustomCameras)
 	{
-		TheMenu->camRot = *rot;
+		FVector p1, p2;
+		switch (TheMenu->iCurrentCustomCamera)
+		{
+		case CAMERA_3RDPERSON:
+			rot->Pitch = -900;
+			rot->Yaw = 16000;
+			rot->Roll = 0;
+			TheMenu->camRot = *rot;
+			MK10::GetCharacterPosition(&p1, PLAYER1);
+			MK10::GetCharacterPosition(&p2, PLAYER2);
+
+			if (p2.Y < p1.Y)
+			{
+				rot->Yaw = -16000;
+				rot->Pitch = -900;
+			}
+
+			TheMenu->camRot = *rot;
+			break;
+		case CAMERA_3RDPERSON2:
+			rot->Pitch = -4000;
+			rot->Yaw = 16000;
+			rot->Roll = 0;
+			TheMenu->camRot = *rot;
+			MK10::GetCharacterPosition(&p1, PLAYER1);
+			MK10::GetCharacterPosition(&p2, PLAYER2);
+
+			if (p2.Y < p1.Y)
+			{
+				rot->Yaw = -16000;
+				rot->Pitch = -4000;
+			}
+
+			TheMenu->camRot = *rot;
+			break;
+		case CAMERA_1STPERSON:
+			rot->Pitch = 0;
+			rot->Yaw = 16000;
+			rot->Roll = 0;
+			TheMenu->camRot = *rot;
+			MK10::GetCharacterPosition(&p1, PLAYER1);
+			MK10::GetCharacterPosition(&p2, PLAYER2);
+
+			if (p2.Y < p1.Y)
+			{
+				rot->Yaw = -16000;
+			}
+
+			TheMenu->camRot = *rot;
+			break;
+		case CAMERA_1STPERSON_MID:
+			rot->Pitch = 0;
+			rot->Yaw = 16000;
+			rot->Roll = 0;
+			TheMenu->camRot = *rot;
+			MK10::GetCharacterPosition(&p1, PLAYER1);
+			MK10::GetCharacterPosition(&p2, PLAYER2);
+
+			if (p2.Y < p1.Y)
+			{
+				rot->Yaw = -16000;
+			}
+
+			TheMenu->camRot = *rot;
+			break;
+		}
+
 		((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x14086C570))(ptr, rot);
 	}
-	if (TheMenu->bCustomCameraRot)
+	else
 	{
-		((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x14086C570))(ptr, &TheMenu->camRot);
+		if (!TheMenu->bCustomCameraRot)
+		{
+			TheMenu->camRot = *rot;
+			((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x14086C570))(ptr, rot);
+		}
+		else
+			((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x14086C570))(ptr, &TheMenu->camRot);
 	}
+
 }
 
 int64 __fastcall MK10Hooks::HookIsEasyFatalityAvailable(const char * name)
