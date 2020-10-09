@@ -2,8 +2,8 @@
 #include "mk10utils.h"
 
 // in case it gets updated - defines
-#define GFG_GAME_INFO 0x1430D4950
-#define GALLERY_INFO 0x14330A450
+#define GFG_GAME_INFO 0x1430DAA00 
+
 
 enum  PLAYER_NUM
 {
@@ -34,6 +34,7 @@ struct FRotator {
 namespace MK10 {
 	const char* GetGameName();
 	void SetCharacter(PLAYER_NUM plr, const char* character);
+	void SetStage(const char* stage);
 	void SlowGameTimeForXTicks(float speed, int ticks);
 	void ResetStageInteractables();
 

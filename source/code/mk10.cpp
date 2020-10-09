@@ -56,19 +56,26 @@ const char* szCharactersRandom[] = {
 
 const char * MK10::GetGameName()
 {
-	return ((const char*(__fastcall*)())GetMKXAddr(0x141606530))();
+	return ((const char*(__fastcall*)())GetMKXAddr(0x14160A2F0))();
 }
 
 void MK10::SetCharacter(PLAYER_NUM plr, const char * character)
 {
 	__int64 gameinfo = *(__int64*)GetMKXAddr(GFG_GAME_INFO);
 
-	((void(__fastcall*)(int64, int, const char*))GetMKXAddr(0x1404972B0))(gameinfo, (int64)plr, character);
+	((void(__fastcall*)(int64, int, const char*))GetMKXAddr(0x14049BC40))(gameinfo, (int64)plr, character);
+}
+
+void MK10::SetStage(const char * stage)
+{
+	__int64 gameinfo = *(__int64*)GetMKXAddr(GFG_GAME_INFO);
+
+	((void(__fastcall*)(int64, const char*))GetMKXAddr(0x14049BBA0))(gameinfo, stage);
 }
 
 void MK10::SlowGameTimeForXTicks(float speed, int ticks)
 {
-	((void(__fastcall*)(float, unsigned int))GetMKXAddr(0x140451EB0))(speed, ticks);
+	((void(__fastcall*)(float, unsigned int))GetMKXAddr(0x140456840))(speed, ticks);
 }
 
 void MK10::ResetStageInteractables()
@@ -76,29 +83,29 @@ void MK10::ResetStageInteractables()
 	int64 gameinfo = *(__int64*)GetMKXAddr(GFG_GAME_INFO);
 	int64 bgndinfo = *(int64*)(gameinfo + 0x58);
 
-	((void(__fastcall*)(int64))GetMKXAddr(0x140184FE0))(bgndinfo);
-	((void(__fastcall*)(int64))GetMKXAddr(0x1401850D0))(bgndinfo);
-	((void(__fastcall*)(int64))GetMKXAddr(0x140184D10))(bgndinfo);
+	((void(__fastcall*)(int64))GetMKXAddr(0x1401851C0))(bgndinfo);
+	((void(__fastcall*)(int64))GetMKXAddr(0x1401852B0))(bgndinfo);
+	((void(__fastcall*)(int64))GetMKXAddr(0x140184EF0))(bgndinfo);
 
 }
 
 int64 MK10::GetCharacterObject(PLAYER_NUM plr)
 {
-	return ((int64(__fastcall*)(PLAYER_NUM))GetMKXAddr(0x1405B6E10))(plr);
+	return ((int64(__fastcall*)(PLAYER_NUM))GetMKXAddr(0x1405BB7A0))(plr);
 }
 
 int64 MK10::GetCharacterInfo(PLAYER_NUM plr)
 {
 	int64 gameinfo = *(__int64*)GetMKXAddr(GFG_GAME_INFO);
 
-	return ((int64(__fastcall*)(int64,PLAYER_NUM))GetMKXAddr(0x140480E30))(gameinfo,plr);
+	return ((int64(__fastcall*)(int64,PLAYER_NUM))GetMKXAddr(0x1404857C0))(gameinfo,plr);
 }
 
 void MK10::GetCharacterPosition(FVector * vec, PLAYER_NUM plr)
 {
 	int64 object = GetCharacterInfo(plr);
 	int64 ptr =*(int64*)(object + 32);
-	((int64(__fastcall*)(int64, FVector* ))GetMKXAddr(0x140CAA980))(ptr, vec);
+	((int64(__fastcall*)(int64, FVector* ))GetMKXAddr(0x140CAE740))(ptr, vec);
 
 }
 
@@ -106,7 +113,7 @@ void MK10::SetCharacterPosition(FVector * vec, PLAYER_NUM plr)
 {
 	int64 object = GetCharacterInfo(plr);
 	int64 ptr = *(int64*)(object + 32);
-	((int64(__fastcall*)(int64, FVector*))GetMKXAddr(0x140CBB1A0))(ptr, vec);
+	((int64(__fastcall*)(int64, FVector*))GetMKXAddr(0x140CBEF60))(ptr, vec);
 }
 
 
@@ -149,28 +156,36 @@ void __fastcall MK10Hooks::HookProcessStuff()
 	if (TheMenu->bInfiniteHealthPlayer1)
 	{
 		if (MK10::GetCharacterObject(PLAYER1))
-		 ((void(__fastcall*)(int64, float))GetMKXAddr(0x140200590))(MK10::GetCharacterObject(PLAYER1),1000.0f);
+		 ((void(__fastcall*)(int64, float))GetMKXAddr(0x140200770))(MK10::GetCharacterObject(PLAYER1),1000.0f);
 	}
 	if (TheMenu->bInfiniteHealthPlayer2)
 	{
 		if (MK10::GetCharacterObject(PLAYER2))
-			((void(__fastcall*)(int64, float))GetMKXAddr(0x140200590))(MK10::GetCharacterObject(PLAYER2), 1000.0f);
+			((void(__fastcall*)(int64, float))GetMKXAddr(0x140200770))(MK10::GetCharacterObject(PLAYER2), 1000.0f);
 	}
 	if (TheMenu->bInfiniteSuperBarPlayer1)
 	{
 		if (MK10::GetCharacterInfo(PLAYER1))
-			((void(__fastcall*)(int64, float))GetMKXAddr(0x140559AF0))(MK10::GetCharacterInfo(PLAYER1), 1.0f);
+			((void(__fastcall*)(int64, float))GetMKXAddr(0x14055E480))(MK10::GetCharacterInfo(PLAYER1), 1.0f);
 	}
 
 	if (TheMenu->bInfiniteSuperBarPlayer2)
 	{
 		if (MK10::GetCharacterInfo(PLAYER2))
-			((void(__fastcall*)(int64, float))GetMKXAddr(0x140559AF0))(MK10::GetCharacterInfo(PLAYER2), 1.0f);
+			((void(__fastcall*)(int64, float))GetMKXAddr(0x14055E480))(MK10::GetCharacterInfo(PLAYER2), 1.0f);
+	}
+
+	if (TheMenu->bChangePlayerSpeed)
+	{
+		if (MK10::GetCharacterObject(PLAYER1))
+			((void(__fastcall*)(int64, float))GetMKXAddr(0x1401FD360))(MK10::GetCharacterObject(PLAYER1), TheMenu->fPlayer1Speed);
+		if (MK10::GetCharacterObject(PLAYER2))
+			((void(__fastcall*)(int64, float))GetMKXAddr(0x1401FD360))(MK10::GetCharacterObject(PLAYER2), TheMenu->fPlayer2Speed);
 	}
 
 	if (TheMenu->bStopTimer)
 	{
-		*(int*)(GetMKXAddr(0x14330AD90) + 0x1964) = 91;
+		*(int*)(GetMKXAddr(0x1433157E0) + 0x1964) = 91;
 	}
 
 	if (TheMenu->bFreeCameraMovement)
@@ -202,7 +217,7 @@ void __fastcall MK10Hooks::HookProcessStuff()
 
 	
 
-	((void(__fastcall*)())GetMKXAddr(0x140CAE620))();
+	((void(__fastcall*)())GetMKXAddr(0x140CB23E0))();
 }
 
 void __fastcall MK10Hooks::HookStartupFightRecording()
@@ -211,7 +226,10 @@ void __fastcall MK10Hooks::HookStartupFightRecording()
 	TheMenu->bEnableCustomCameras = false;
 	TheMenu->bYObtained = false;
 	// recording call
-	((void(__fastcall*)())GetMKXAddr(0x1403922B0))();
+	((void(__fastcall*)())GetMKXAddr(0x1403924C0))();
+
+	if (TheMenu->bStageModifier)
+		MK10::SetStage(TheMenu->szStageModifierStage);
 
 	if (!TheMenu->bEnableRandomFights)
 	{
@@ -221,10 +239,10 @@ void __fastcall MK10Hooks::HookStartupFightRecording()
 			MK10::SetCharacter(PLAYER2, TheMenu->szPlayer2ModifierCharacter);
 
 		if (TheMenu->bPlayer1TraitEnabled)
-			((void(__fastcall*)(int64, int))GetMKXAddr(0x1405940B0))(PLAYER1, TheMenu->iPlayer1Trait);
+			((void(__fastcall*)(int64, int))GetMKXAddr(0x140598A40))(PLAYER1, TheMenu->iPlayer1Trait);
 
 		if (TheMenu->bPlayer2TraitEnabled)
-			((void(__fastcall*)(int64, int))GetMKXAddr(0x1405940B0))(PLAYER2, TheMenu->iPlayer2Trait);
+			((void(__fastcall*)(int64, int))GetMKXAddr(0x140598A40))(PLAYER2, TheMenu->iPlayer2Trait);
 	}
 
 
@@ -238,12 +256,12 @@ void __fastcall MK10Hooks::HookStartupFightRecording()
 		{
 			int var = rand() % 3;
 			if (var == 0) var = 1;
-			((void(__fastcall*)(int64, int))GetMKXAddr(0x1405940B0))(PLAYER1, var);
+			((void(__fastcall*)(int64, int))GetMKXAddr(0x140598A40))(PLAYER1, var);
 		}
 	}
 
-	printf("MKXHook::Info() | %s VS %s\n", ((const char*(__fastcall*)(int64))GetMKXAddr(0x14054EEA0))(MK10::GetCharacterInfo(PLAYER1)),
-		((const char*(__fastcall*)(int64))GetMKXAddr(0x14054EEA0))(MK10::GetCharacterInfo(PLAYER2)));
+	printf("MKXHook::Info() | %s VS %s\n", ((const char*(__fastcall*)(int64))GetMKXAddr(0x140553830))(MK10::GetCharacterInfo(PLAYER1)),
+		((const char*(__fastcall*)(int64))GetMKXAddr(0x140553830))(MK10::GetCharacterInfo(PLAYER2)));
 
 }
 
@@ -254,7 +272,7 @@ int64 __fastcall MK10Hooks::HookCheckIfCharacterFemale(const char * character)
 	if (IsNPCCharacter(character))
 		return IsNPCCharacterMale(character);
 	else
-		return ((int64(__fastcall*)(const char*))GetMKXAddr(0x14047F330))(character);;
+		return ((int64(__fastcall*)(const char*))GetMKXAddr(0x140483CC0))(character);;
 
 
 
@@ -269,7 +287,7 @@ void __fastcall MK10Hooks::HookDLCCellAmount(int64 ptr, int cells, int64 a3, int
 {
 	cells = SettingsMgr->iAvailableDLCCells;
 	printf("MKXHook::HookDLCCellAmount() | Requesting %d cells\n", cells, a4);
-	((void(__fastcall*)(int64,int,int64,int))GetMKXAddr(0x14069A650))(ptr,cells,a3,a4);
+	((void(__fastcall*)(int64,int,int64,int))GetMKXAddr(0x14069F130))(ptr,cells,a3,a4);
 }
 
 void __fastcall MK10Hooks::HookCamSetPos(int64 ptr, FVector* pos)
@@ -346,17 +364,17 @@ void __fastcall MK10Hooks::HookCamSetPos(int64 ptr, FVector* pos)
 			TheMenu->camPos = *pos;
 			break;
 		}
-		((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x14086B8A0))(ptr, pos);
+		((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x140870390))(ptr, pos);
 	}
 	else
 	{
 		if (!TheMenu->bCustomCamera)
 		{
 			TheMenu->camPos = *pos;
-			((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x14086B8A0))(ptr, pos);
+			((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x140870390))(ptr, pos);
 		}
 		else
-			((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x14086B8A0))(ptr, &TheMenu->camPos);
+			((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x140870390))(ptr, &TheMenu->camPos);
 	}
 
 }
@@ -432,17 +450,17 @@ void __fastcall MK10Hooks::HookCamSetRot(int64 ptr, FRotator* rot)
 			break;
 		}
 
-		((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x14086C570))(ptr, rot);
+		((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x140871060))(ptr, rot);
 	}
 	else
 	{
 		if (!TheMenu->bCustomCameraRot)
 		{
 			TheMenu->camRot = *rot;
-			((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x14086C570))(ptr, rot);
+			((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x140871060))(ptr, rot);
 		}
 		else
-			((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x14086C570))(ptr, &TheMenu->camRot);
+			((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x140871060))(ptr, &TheMenu->camRot);
 	}
 
 }

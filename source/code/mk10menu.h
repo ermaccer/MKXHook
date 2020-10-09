@@ -34,6 +34,10 @@ public:
 	int  iPlayer2Trait;
 	char szPlayer1ModifierCharacter[128] = {};
 	char szPlayer2ModifierCharacter[128] = {};
+	bool bChangePlayerSpeed;
+	float fPlayer1Speed;
+	float fPlayer2Speed;
+
 
 	// cheats
 	bool bInfiniteEasyFatalities;
@@ -65,6 +69,9 @@ public:
 	FVector plrPos;
 	FVector plrPos2;
 
+	// stage
+	bool bStageModifier;
+	char szStageModifierStage[128] = {};
 
 	
 	bool bEnableRandomFights;

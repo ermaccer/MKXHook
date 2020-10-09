@@ -12,6 +12,7 @@ void eSettingsManager::Init()
 	bEnableNPCFatalities =  ini.ReadBoolean("Settings", "bEnableNPCFatalities", false);
 	bFixNPCGenderFatalityMessage = ini.ReadBoolean("Settings", "bFixNPCGenderFatalityMessage", false);
 	bEnable60FPSFrontend = ini.ReadBoolean("Settings", "bEnable60FPSPatch", false);
+	bDisableSweatEffects = ini.ReadBoolean("Settings", "bDisableSweatEffects", false);
 
 	iHookMenuOpenKey = ini.ReadInteger("Settings", "iHookMenuOpenKey", VK_F1);
 	iAvailableDLCCells = ini.ReadInteger("Settings", "iAvailableDLCCells", -1);

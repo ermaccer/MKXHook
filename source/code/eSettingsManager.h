@@ -13,6 +13,7 @@ public:
 	bool bDisableAssetHashChecking;
 	bool bEnableConsoleWindow;
 	bool bDisableComboDamageScaling;
+	bool bDisableSweatEffects;
 
 	int iHookMenuOpenKey;
 	// free camera keys

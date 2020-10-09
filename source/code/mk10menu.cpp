@@ -54,6 +54,41 @@ const char* szCharacters[] = {
 };
 
 
+
+const char* szStageNames[]{
+   "BGND_AztecCourtyard",
+   "BGND_CharacterTest",
+   "BGND_CharacterViewer",
+   "BGND_Cove",
+   "BGND_Crossroads",
+   "BGND_DestroyedCity",
+   "BGND_DestroyedCityPast",
+   "BGND_JinseiChamber",
+   "BGND_JinseiChamberRed",
+   "BGND_Jungle",
+   "BGND_KR_IL_Tunnel",
+   "BGND_KR_KahnTomb",
+   "BGND_KR_SnowForest",
+   "BGND_LinKueiTemple",
+   "BGND_OWMarketplace",
+   "BGND_Pit",
+   "BGND_QuanChiFortress",
+   "BGND_RefugeeCamp",
+   "BGND_SkyTemple",
+   "BGND_SkyTempleRed",
+   "BGND_SnowForest",
+   "BGND_SnowForestRed",
+   "BGND_TYM_BlaDrag",
+   "BGND_TYM_BroShad",
+   "BGND_TYM_LinKuei",
+   "BGND_TYM_SF",
+   "BGND_TYM_SpeForc",
+   "BGND_TYM_WhiLotu",
+   "BGND_TrainingRoom",
+
+};
+
+
 const char* szCameraModes[TOTAL_CUSTOM_CAMERAS] = {
 	"Third Person",
 	"Third Person #2",
@@ -118,9 +153,14 @@ void MK10Menu::Initialize()
 	bStopTimer = false;
 	bYObtained = false;
 	iCurrentTab = 0;
+	bStageModifier = false;
+	bChangePlayerSpeed = false;
+	fPlayer1Speed = 1.0f;
+	fPlayer2Speed = 1.0f;
 	sprintf(szPlayer1ModifierCharacter, szCharacters[0]);
 	sprintf(szPlayer2ModifierCharacter, szCharacters[0]);
 	sprintf(szCurrentCameraOption, szCameraModes[0]);
+	sprintf(szStageModifierStage, szStageNames[0]);
 	iSlowMotionTicks = 0;
 	fSlowMotionSpeed = 0.0f;
 	fAdjustCam = 30.0f;
@@ -140,15 +180,15 @@ void MK10Menu::Process()
 void MK10Menu::Draw()
 {
 	ImGui::GetIO().MouseDrawCursor = true;
-	ImGui::Begin("MKXHook by ermaccer (0.4beta)");
+	ImGui::Begin("MKXHook by ermaccer (0.5)");
 	if (ImGui::Button("Character Modifier")) iCurrentTab = TAB_CHARACTER_MODIFIER;
 	ImGui::SameLine();
 	if (ImGui::Button("Stage Modifier")) iCurrentTab = TAB_STAGE_MODIFIER;
 	ImGui::SameLine();
 	if (ImGui::Button("Camera Control")) iCurrentTab = TAB_CAMERA;
 	ImGui::SameLine();
-//	if (ImGui::Button("Player Control")) iCurrentTab = TAB_PLAYER_CONTROL;
-	//ImGui::SameLine();
+    if (ImGui::Button("Player Control")) iCurrentTab = TAB_PLAYER_CONTROL;
+	ImGui::SameLine();
 	if (ImGui::Button("Cheats")) iCurrentTab = TAB_CHEATS;
 	ImGui::SameLine();
 	if (ImGui::Button("Misc.")) iCurrentTab = TAB_MISC;
@@ -238,6 +278,19 @@ void MK10Menu::Draw()
 	}
 	if (iCurrentTab == TAB_PLAYER_CONTROL)
 	{
+		ImGui::Checkbox("Change Player Speed", &bChangePlayerSpeed);
+		ImGui::SliderFloat("Player 1", &fPlayer1Speed, 0.0, 10.0f);
+		ImGui::SliderFloat("Player 2", &fPlayer2Speed, 0.0, 10.0f);
+
+		bool reset = ImGui::Button("Reset Speed");
+		if (reset)
+		{
+			fPlayer1Speed = 1.0f;
+			fPlayer2Speed = 1.0f;
+		}
+		ImGui::Separator();
+		ImGui::Text("Position"); 
+		ImGui::SameLine(); ShowHelpMarker("Preview only!");
 		if (MK10::GetCharacterObject(PLAYER1))
 		{
 			MK10::GetCharacterPosition(&plrPos, PLAYER1);
@@ -259,22 +312,38 @@ void MK10Menu::Draw()
 		if (reset)
 			MK10::ResetStageInteractables();
 
+		ImGui::Checkbox("Enable Stage Modifier", &bStageModifier);
+
+		if (ImGui::BeginCombo("Stage", szStageModifierStage))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(szStageNames); n++)
+			{
+				bool is_selected = (szStageModifierStage == szCameraModes[n]);
+				if (ImGui::Selectable(szStageNames[n], is_selected))
+					sprintf(szStageModifierStage, szStageNames[n]);
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+
+			}
+			ImGui::EndCombo();
+		}
+
 	}
 	if (iCurrentTab == TAB_MISC)
 	{
 		bool swap = ImGui::Button("Swap Player Positions");
 		ImGui::SameLine(); ShowHelpMarker("Shortcut - TODO");
 		if (swap)
-			((void(__fastcall*)())GetMKXAddr(0x14055AD40))();
+			((void(__fastcall*)())GetMKXAddr(0x14055F6D0))();
 
 		bool unlock = ImGui::Button("Unlock Costumes");
 		ImGui::SameLine(); ShowHelpMarker("Execute this option in the Crypt");
 		if (unlock)
 		{
-			int64 gallery = ((int64(__fastcall*)())GetMKXAddr(0x14047EAB0))();
+			int64 gallery = ((int64(__fastcall*)())GetMKXAddr(0x140483440))();
 
 			if (gallery)
-			((void(__fastcall*)(int64))GetMKXAddr(0x14049D000))(gallery);
+			((void(__fastcall*)(int64))GetMKXAddr(0x1404A1990))(gallery);
 		}
 
 
