@@ -241,7 +241,6 @@ int WINAPI main()
 	while (!g_bInitialised) {
 		Sleep(1000);
 	}
-
 	pDeviceContextVTable = (DWORD_PTR*)pContext;
 	pDeviceContextVTable = (DWORD_PTR*)pDeviceContextVTable[0];
 

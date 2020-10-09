@@ -1,5 +1,6 @@
 // mkxhook
 // 08-06-2020 | Updated to latest Steam patch
+// 10-08-2020 | Updated to latest Steam patch
 #include "pch.h"
 #include "utils/MemoryMgr.h"
 #include "utils/Trampoline.h"
@@ -27,8 +28,8 @@ bool __fastcall SetFlagNull()
 		result = 0;
 	else
 	{
-		Patch<int>(GetMKXAddr(0x14320BDD4), 0);
-		Patch<int>(GetMKXAddr(0x14320BDE8), 0);
+		Patch<int>(GetMKXAddr(0x143211E54), 0);
+		Patch<int>(GetMKXAddr(0x143211E68), 0);
 	}
 	return result;
 
@@ -44,22 +45,13 @@ const char* __fastcall SwapGameName()
 
 void OnInitializeHook()
 {
-
-
 	Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
-	InjectHook(GetMKXAddr(0x14049C5DD), tramp->Jump(MK10Hooks::HookProcessStuff));
-	InjectHook(GetMKXAddr(0x1413708D8), tramp->Jump(SwapGameName));
-	InjectHook(GetMKXAddr(0x140497FE9), tramp->Jump(MK10Hooks::HookStartupFightRecording));
+	InjectHook(GetMKXAddr(0x1404A0F6D), tramp->Jump(MK10Hooks::HookProcessStuff));
+	InjectHook(GetMKXAddr(0x141374698), tramp->Jump(SwapGameName));
+	InjectHook(GetMKXAddr(0x14049C979), tramp->Jump(MK10Hooks::HookStartupFightRecording));
 
 	if (SettingsMgr->bEnable60FPSFrontend)
 	{
-		Patch<char>(GetMKXAddr(0x1404950E6 + 1), 0);
-		Patch<char>(GetMKXAddr(0x1404950F7 + 1), 0);
-		Patch<char>(GetMKXAddr(0x142639FE4), '6');
-		Patch<char>(GetMKXAddr(0x1428C6580), '6');
-		Patch<char>(GetMKXAddr(0x140E8F4CB + 2), 1);
-		Patch<char>(GetMKXAddr(0x140F7DE89 + 2), 1);
-
 		InjectHook(GetMKXAddr(0x14002B250), tramp->Jump(SetFlagNull),PATCH_JUMP);
 
 	}
@@ -67,8 +59,8 @@ void OnInitializeHook()
 
 	if (!(SettingsMgr->iAvailableDLCCells == -1))
 	{
-		InjectHook(GetMKXAddr(0x14004BAB9), tramp->Jump(MK10Hooks::HookDLCCellAmount));
-		Patch<int>(GetMKXAddr(0x14069A662 + 1), SettingsMgr->iAvailableDLCCells);
+		InjectHook(GetMKXAddr(0x140057469), tramp->Jump(MK10Hooks::HookDLCCellAmount));
+		Patch<int>(GetMKXAddr(0x14069F142 + 1), SettingsMgr->iAvailableDLCCells);
 	}
 
 	if (SettingsMgr->bDisableAssetHashChecking)
@@ -76,46 +68,54 @@ void OnInitializeHook()
 	
 	if (SettingsMgr->bEnableNPCFatalities)
 	{
-		InjectHook(GetMKXAddr(0x14004E303), tramp->Jump(MK10Hooks::HookCheckFatalityStatus));
-		InjectHook(GetMKXAddr(0x1402A0767), tramp->Jump(MK10Hooks::HookCheckFatalityStatus));
-		InjectHook(GetMKXAddr(0x14044C0CA), tramp->Jump(MK10Hooks::HookCheckFatalityStatus));
+		InjectHook(GetMKXAddr(0x1400589C3), tramp->Jump(MK10Hooks::HookCheckFatalityStatus));
+		InjectHook(GetMKXAddr(0x1402A0977), tramp->Jump(MK10Hooks::HookCheckFatalityStatus));
+		InjectHook(GetMKXAddr(0x140450A5A), tramp->Jump(MK10Hooks::HookCheckFatalityStatus));
 	}
 
 	if (SettingsMgr->bFixNPCGenderFatalityMessage)
 	{
-		InjectHook(GetMKXAddr(0x14008194E), tramp->Jump(MK10Hooks::HookCheckIfCharacterFemale));
-		InjectHook(GetMKXAddr(0x1401E7E0C), tramp->Jump(MK10Hooks::HookCheckIfCharacterFemale));
+		InjectHook(GetMKXAddr(0x14008BE3E), tramp->Jump(MK10Hooks::HookCheckIfCharacterFemale));
+		InjectHook(GetMKXAddr(0x1401E7FEC), tramp->Jump(MK10Hooks::HookCheckIfCharacterFemale));
 	}
-	InjectHook(GetMKXAddr(0x14018ED48), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14018ED3C), tramp->Jump(MK10Hooks::HookCamSetRot));
 
-	InjectHook(GetMKXAddr(0x14017C630), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14009523A), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14017C6A0), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14017D141), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14017D1C5), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14018EC67), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x1402D6774), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x1402EB446), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14030778F), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14030805F), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14030ABE3), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14030ABE3), tramp->Jump(MK10Hooks::HookCamSetPos));
+	if (SettingsMgr->bDisableSweatEffects)
+	{
+		InjectHook(GetMKXAddr(0x14008557B), tramp->Jump(GenericDummy));
+		InjectHook(GetMKXAddr(0x140208230), tramp->Jump(GenericDummy), PATCH_JUMP);
+		InjectHook(GetMKXAddr(0x1402082B0), tramp->Jump(GenericDummy), PATCH_JUMP);
+	}
 
-	InjectHook(GetMKXAddr(0x140096C0A), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14016F399), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14017C63D), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14017C6AD), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14017D150), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14017D1D4), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14018EC72), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x1401911A2), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x1402D6783), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x1402EB453), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14030779B), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14030806B), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14030ABAA), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x140588020), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x1400A11DA), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x14016F579), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x14017C81D), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x14017C88D), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x14017D330), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x14017D3B4), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x14018EE52), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x14018EF1C), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x140191382), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x1402D6993), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x1402EB663), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x1403079AB), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x14030827B), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x14030ADBA), tramp->Jump(MK10Hooks::HookCamSetRot));
+	InjectHook(GetMKXAddr(0x14058C9B0), tramp->Jump(MK10Hooks::HookCamSetRot));
+
+
+	InjectHook(GetMKXAddr(0x14009F63A), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14017C810), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14017C880), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14017D321), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14017D3A5), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14018EE47), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14018EF28), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x1402D6984), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x1402EB656), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14030799F), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14030826F), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14030ADF3), tramp->Jump(MK10Hooks::HookCamSetPos));
+	InjectHook(GetMKXAddr(0x14058C9A1), tramp->Jump(MK10Hooks::HookCamSetPos));
 
 
 }
