@@ -2,7 +2,7 @@
 #include "mk10utils.h"
 
 // in case it gets updated - defines
-#define GFG_GAME_INFO 0x1430DAA00 
+#define GFG_GAME_INFO 0x1430DBA00
 
 
 enum  PLAYER_NUM
@@ -44,6 +44,8 @@ namespace MK10 {
 	void  GetCharacterPosition(FVector* vec, PLAYER_NUM plr);
 	void  SetCharacterPosition(FVector* vec, PLAYER_NUM plr);
 
+	void  SetCharacterLife(int64 obj, float life);
+	void  SetCharacterMeter(int64 obj, float meter);
 }
 
 

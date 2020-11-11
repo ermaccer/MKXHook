@@ -334,16 +334,16 @@ void MK10Menu::Draw()
 		bool swap = ImGui::Button("Swap Player Positions");
 		ImGui::SameLine(); ShowHelpMarker("Shortcut - TODO");
 		if (swap)
-			((void(__fastcall*)())GetMKXAddr(0x14055F6D0))();
+			((void(__fastcall*)())GetMKXAddr(0x14055FE90))();
 
 		bool unlock = ImGui::Button("Unlock Costumes");
 		ImGui::SameLine(); ShowHelpMarker("Execute this option in the Crypt");
 		if (unlock)
 		{
-			int64 gallery = ((int64(__fastcall*)())GetMKXAddr(0x140483440))();
+			int64 gallery = ((int64(__fastcall*)())GetMKXAddr(0x140483C00))();
 
 			if (gallery)
-			((void(__fastcall*)(int64))GetMKXAddr(0x1404A1990))(gallery);
+			((void(__fastcall*)(int64))GetMKXAddr(0x1404A2150))(gallery);
 		}
 
 
