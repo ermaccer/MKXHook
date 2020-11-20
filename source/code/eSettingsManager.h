@@ -14,6 +14,7 @@ public:
 	bool bEnableConsoleWindow;
 	bool bDisableComboDamageScaling;
 	bool bDisableSweatEffects;
+	bool bEnableNPCVictoryPoses;
 
 	int iHookMenuOpenKey;
 	// free camera keys

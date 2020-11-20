@@ -88,6 +88,27 @@ void OnInitializeHook()
 		InjectHook(GetMKXAddr(0x1402082B0), tramp->Jump(GenericDummy), PATCH_JUMP);
 	}
 
+	if (SettingsMgr->bDisableComboDamageScaling)
+	{
+		InjectHook(GetMKXAddr(0x1400579EB), tramp->Jump(MK10Hooks::HookDamageMultiplier));
+		InjectHook(GetMKXAddr(0x1401C27DC), tramp->Jump(MK10Hooks::HookDamageMultiplier));
+		InjectHook(GetMKXAddr(0x14037791F), tramp->Jump(MK10Hooks::HookDamageMultiplier));
+		InjectHook(GetMKXAddr(0x14043E5D7), tramp->Jump(MK10Hooks::HookDamageMultiplier));
+		InjectHook(GetMKXAddr(0x14054B82B), tramp->Jump(MK10Hooks::HookDamageMultiplier));
+
+		InjectHook(GetMKXAddr(0x14005AD7B), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
+		InjectHook(GetMKXAddr(0x1401E70C8), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
+		InjectHook(GetMKXAddr(0x140203ADA), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
+		InjectHook(GetMKXAddr(0x1402040BC), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
+		InjectHook(GetMKXAddr(0x14043E5E7), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
+		InjectHook(GetMKXAddr(0x140440BE3), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
+
+		InjectHook(GetMKXAddr(0x1400561AB), tramp->Jump(MK10Hooks::HookDamageMultiplierThree));
+		InjectHook(GetMKXAddr(0x14043347F), tramp->Jump(MK10Hooks::HookDamageMultiplierThree));
+		InjectHook(GetMKXAddr(0x1404334FF), tramp->Jump(MK10Hooks::HookDamageMultiplierThree));
+
+	}
+
 	InjectHook(GetMKXAddr(0x1400A171A), tramp->Jump(MK10Hooks::HookCamSetRot));
 	InjectHook(GetMKXAddr(0x14016F579), tramp->Jump(MK10Hooks::HookCamSetRot));
 	InjectHook(GetMKXAddr(0x14017C81D), tramp->Jump(MK10Hooks::HookCamSetRot));
@@ -118,6 +139,11 @@ void OnInitializeHook()
 	InjectHook(GetMKXAddr(0x14030826F), tramp->Jump(MK10Hooks::HookCamSetPos));
 	InjectHook(GetMKXAddr(0x14030ADF3), tramp->Jump(MK10Hooks::HookCamSetPos));
 	InjectHook(GetMKXAddr(0x14058D161), tramp->Jump(MK10Hooks::HookCamSetPos));
+
+	if (SettingsMgr->bEnableNPCVictoryPoses)
+	{
+		InjectHook(GetMKXAddr(0x1405543B6), tramp->Jump(MK10Hooks::HookGetCharacterVictory));
+	}
 
 
 }

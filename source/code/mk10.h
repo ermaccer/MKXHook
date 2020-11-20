@@ -65,6 +65,11 @@ namespace MK10Hooks {
 	int64 __fastcall HookIsEasyFatalityAvailable(const char* name);
 
 	void __fastcall  Hook30To60Swap(int64 game, int a2);
+
+	void __fastcall  HookDamageMultiplier(int64 ptr, float mult);
+	void __fastcall  HookDamageMultiplierTwo(int64 ptr, float mult);
+	void __fastcall  HookDamageMultiplierThree(int64 ptr, float mult);
+	int64 __fastcall HookGetCharacterVictory(const char* name, const char* packageID, char* packageName, int packageBuffer);
 }
 
 

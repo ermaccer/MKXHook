@@ -180,7 +180,7 @@ void MK10Menu::Process()
 void MK10Menu::Draw()
 {
 	ImGui::GetIO().MouseDrawCursor = true;
-	ImGui::Begin("MKXHook by ermaccer (0.5)");
+	ImGui::Begin("MKXHook by ermaccer (0.5.2)");
 	if (ImGui::Button("Character Modifier")) iCurrentTab = TAB_CHARACTER_MODIFIER;
 	ImGui::SameLine();
 	if (ImGui::Button("Stage Modifier")) iCurrentTab = TAB_STAGE_MODIFIER;
@@ -332,7 +332,7 @@ void MK10Menu::Draw()
 	if (iCurrentTab == TAB_MISC)
 	{
 		bool swap = ImGui::Button("Swap Player Positions");
-		ImGui::SameLine(); ShowHelpMarker("Shortcut - TODO");
+		ImGui::SameLine(); ShowHelpMarker("Shortcut - CTRL+F2");
 		if (swap)
 			((void(__fastcall*)())GetMKXAddr(0x14055FE90))();
 
@@ -351,7 +351,7 @@ void MK10Menu::Draw()
 		ImGui::Text("Gamespeed Control");
 		ImGui::SameLine();
 		bool slowmo = ImGui::Button("Apply");
-		ImGui::SameLine(); ShowHelpMarker("Shortcut - TODO");
+		ImGui::SameLine(); ShowHelpMarker("Shortcut - CTRL+F3");
 		if (slowmo)
 			MK10::SlowGameTimeForXTicks(fSlowMotionSpeed, iSlowMotionTicks);
 
@@ -359,6 +359,7 @@ void MK10Menu::Draw()
 		ImGui::InputInt("Ticks", &iSlowMotionTicks, 1000,10000);
 
 
+		ImGui::Checkbox("Disable Combo Damage Scaling", &SettingsMgr->bDisableComboDamageScaling);
 
 	}
 	if (iCurrentTab == TAB_CHEATS)

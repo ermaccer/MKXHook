@@ -30,5 +30,6 @@ void eSettingsManager::Init()
 
 	iFreeCameraKeyYawPlus = ini.ReadInteger("Settings", "iFreeCameraKeyYawPlus", 0);
 	iFreeCameraKeyYawMinus = ini.ReadInteger("Settings", "iFreeCameraKeyYawMinus", 0);
-	//bDisableComboDamageScaling = ini.ReadBoolean("Settings",)
+	bDisableComboDamageScaling = ini.ReadBoolean("Settings", "bDisableComboDamageScaling", false);
+	bEnableNPCVictoryPoses = ini.ReadBoolean("Settings", "bEnableNPCVictoryPoses", false);
 }

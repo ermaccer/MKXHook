@@ -163,6 +163,20 @@ void __fastcall MK10Hooks::HookProcessStuff()
 {
 	TheMenu->Process();
 
+	// hot keys
+
+	if (MK10::GetCharacterObject(PLAYER1) && MK10::GetCharacterObject(PLAYER2))
+	{
+		if (GetAsyncKeyState(VK_CONTROL))
+		{
+			if (GetAsyncKeyState(VK_F2))
+				((void(__fastcall*)())GetMKXAddr(0x14055FE90))();
+			if (GetAsyncKeyState(VK_F3))
+				MK10::SlowGameTimeForXTicks(TheMenu->fSlowMotionSpeed, TheMenu->iSlowMotionTicks);
+		}
+
+	}
+
 	if (TheMenu->bInfiniteHealthPlayer1)
 	{
 		if (MK10::GetCharacterObject(PLAYER1))
@@ -224,6 +238,8 @@ void __fastcall MK10Hooks::HookProcessStuff()
 		MK10::SetCharacterPosition(&TheMenu->plrPos, PLAYER1);
 		MK10::SetCharacterPosition(&TheMenu->plrPos, PLAYER2);
 	}
+
+
 
 	
 
@@ -486,4 +502,39 @@ int64 __fastcall MK10Hooks::HookIsEasyFatalityAvailable(const char * name)
 void __fastcall MK10Hooks::Hook30To60Swap(int64 game, int a2)
 {
 	((void(__fastcall*)(int,int))GetMKXAddr(0x140495110))(game,a2);
+}
+
+void __fastcall MK10Hooks::HookDamageMultiplier(int64 ptr, float mult)
+{
+	if (SettingsMgr->bDisableComboDamageScaling)
+		mult = 1.0f;
+
+	((void(__fastcall*)(int64, float))GetMKXAddr(0x14055D7E0))(ptr, mult);
+}
+
+void __fastcall MK10Hooks::HookDamageMultiplierTwo(int64 ptr, float mult)
+{
+	if (SettingsMgr->bDisableComboDamageScaling)
+		mult = 1.0f;
+
+	((void(__fastcall*)(int64, float))GetMKXAddr(0x14055D3B0))(ptr, mult);
+}
+
+void __fastcall MK10Hooks::HookDamageMultiplierThree(int64 ptr, float mult)
+{
+	if (SettingsMgr->bDisableComboDamageScaling)
+		mult = 1.0f;
+	((void(__fastcall*)(int64, float))GetMKXAddr(0x140549CE0))(ptr, mult);
+}
+
+int64 __fastcall MK10Hooks::HookGetCharacterVictory(const char * name, const char * packageID, char * packageName, int packageBuffer)
+{
+	const char* newName = name;
+
+	if (strcmp(name, "rain_a") == 0)
+	{
+		newName = "char_kunglao_a";
+	}
+
+	return ((int64(__fastcall*)(const char*, const char*, char*, int))GetMKXAddr(0x140553850))(newName,packageID,packageName,packageBuffer);
 }
