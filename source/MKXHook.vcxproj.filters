@@ -90,6 +90,9 @@
     <ClInclude Include="dxhook.h">
       <Filter>Header Files\dxhook</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -143,5 +146,10 @@
     <ClCompile Include="code\eSettingsManager.cpp">
       <Filter>Header Files\code</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MKXHook.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

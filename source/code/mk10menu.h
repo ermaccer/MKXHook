@@ -51,9 +51,13 @@ public:
 
 	// camera
 	bool bCustomCamera;
+	bool bCustomFOV;
 	bool bCustomCameraRot;
 	FVector camPos;
 	FRotator camRot;
+	float camFov;
+
+
 	bool bFreeCameraMovement;
 	float fFreeCameraSpeed;
 	int  iFreeCameraRotSpeed;
@@ -69,13 +73,18 @@ public:
 	FVector plrPos;
 	FVector plrPos2;
 
+
+	bool bChangePlayerScale;
+	FVector fPlayer1Scale;
+	FVector fPlayer2Scale;
+
 	// stage
 	bool bStageModifier;
 	char szStageModifierStage[128] = {};
 
 	
 	bool bEnableRandomFights;
-
+	bool bFreezeWorld;
 
 	int  iSlowMotionTicks;
 	float fSlowMotionSpeed;

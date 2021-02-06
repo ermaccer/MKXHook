@@ -101,6 +101,11 @@ int64 MK10::GetCharacterInfo(PLAYER_NUM plr)
 	return ((int64(__fastcall*)(int64,PLAYER_NUM))GetMKXAddr(0x140485F80))(gameinfo,plr);
 }
 
+void MK10::SetCharacterScale(PLAYER_NUM plr, FVector * scale)
+{
+	((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x140CC1BD0))(MK10::GetCharacterObject(plr), scale);
+}
+
 void MK10::GetCharacterPosition(FVector * vec, PLAYER_NUM plr)
 {
 	int64 object = GetCharacterInfo(plr);
@@ -124,6 +129,32 @@ void MK10::SetCharacterLife(int64 obj, float life)
 void MK10::SetCharacterMeter(int64 obj, float meter)
 {
 	((void(__fastcall*)(int64, float))GetMKXAddr(0x14055EC40))(obj, meter);
+}
+
+void __fastcall MK10::CamSetPos(int64 ptr, FVector * pos)
+{
+	((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x140870B50))(ptr, pos);
+}
+
+void __fastcall MK10::CamSetRot(int64 ptr, FRotator * rot)
+{
+	((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x140871820))(ptr, rot);
+}
+
+void __fastcall MK10::ActorCamSetPos(int64 ptr, FVector * pos)
+{
+	*(float*)(ptr + 0x414) = pos->X;
+	*(float*)(ptr + 0x414 + 4) = pos->Y;
+	*(float*)(ptr + 0x414 + 8) = pos->Z;
+	((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x1414631A0))(ptr, pos);
+}
+
+void __fastcall MK10::ActorCamSetRot(int64 ptr, FRotator * rot)
+{
+	*(int*)(ptr + 0x414 + 12) = rot->Pitch;
+	*(int*)(ptr + 0x414 + 12 + 4) = rot->Yaw;
+	*(int*)(ptr + 0x414 + 12 + 8) = rot->Roll;
+	((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x141463BE0))(ptr, rot);
 }
 
 
@@ -177,6 +208,15 @@ void __fastcall MK10Hooks::HookProcessStuff()
 
 	}
 
+
+	if (TheMenu->bChangePlayerScale)
+	{
+		if (MK10::GetCharacterObject(PLAYER1))
+			MK10::SetCharacterScale(PLAYER1, &TheMenu->fPlayer1Scale);
+		if (MK10::GetCharacterObject(PLAYER2))
+			MK10::SetCharacterScale(PLAYER2, &TheMenu->fPlayer2Scale);
+	}
+
 	if (TheMenu->bInfiniteHealthPlayer1)
 	{
 		if (MK10::GetCharacterObject(PLAYER1))
@@ -228,9 +268,24 @@ void __fastcall MK10Hooks::HookProcessStuff()
 			TheMenu->camPos.Z -= TheMenu->fFreeCameraSpeed;
 
 		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYawMinus))
-			TheMenu->camRot.Yaw-= TheMenu->iFreeCameraRotSpeed;
+			TheMenu->camRot.Yaw -= TheMenu->iFreeCameraRotSpeed;
 		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYawPlus))
 			TheMenu->camRot.Yaw += TheMenu->iFreeCameraRotSpeed;
+
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyRollMinus))
+			TheMenu->camRot.Roll -= TheMenu->iFreeCameraRotSpeed;
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyRollPlus))
+			TheMenu->camRot.Roll += TheMenu->iFreeCameraRotSpeed;
+
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyPitchMinus))
+			TheMenu->camRot.Pitch -= TheMenu->iFreeCameraRotSpeed;
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyPitchPlus))
+			TheMenu->camRot.Pitch += TheMenu->iFreeCameraRotSpeed;
+
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyFOVMinus))
+			TheMenu->camFov -= 1.0f;
+		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyFOVPlus))
+			TheMenu->camFov += 1.0f;
 	}
 
 	if (TheMenu->bFreezePosition)
@@ -371,7 +426,7 @@ void __fastcall MK10Hooks::HookCamSetPos(int64 ptr, FVector* pos)
 				pos->Y += TheMenu->fAdjustCam * -1;
 			else
 		     	pos->Y += TheMenu->fAdjustCam;
-			pos->Z = 171.0f + plrPos.Z;
+			pos->Z = 160.0f + plrPos.Z;
 
 
 			TheMenu->camPos = *pos;
@@ -384,23 +439,23 @@ void __fastcall MK10Hooks::HookCamSetPos(int64 ptr, FVector* pos)
 				pos->Y += 23.0f * -1;
 			else
 				pos->Y += 23.0f;
-			pos->Z = 124.0f + plrPos.Z;
+			pos->Z = 134.0f + plrPos.Z;
 
 
 			TheMenu->camPos = *pos;
 			break;
 		}
-		((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x140870B50))(ptr, pos);
+		MK10::CamSetPos(ptr, pos);
 	}
 	else
 	{
 		if (!TheMenu->bCustomCamera)
 		{
 			TheMenu->camPos = *pos;
-			((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x140870B50))(ptr, pos);
+			MK10::CamSetPos(ptr, pos);
 		}
 		else
-			((void(__fastcall*)(int64, FVector*))GetMKXAddr(0x140870B50))(ptr, &TheMenu->camPos);
+			MK10::CamSetPos(ptr, &TheMenu->camPos);
 	}
 
 }
@@ -476,17 +531,194 @@ void __fastcall MK10Hooks::HookCamSetRot(int64 ptr, FRotator* rot)
 			break;
 		}
 
-		((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x140871820))(ptr, rot);
+		MK10::CamSetRot(ptr, rot);
 	}
 	else
 	{
 		if (!TheMenu->bCustomCameraRot)
 		{
 			TheMenu->camRot = *rot;
-			((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x140871820))(ptr, rot);
+			MK10::CamSetRot(ptr, rot);
 		}
 		else
-			((void(__fastcall*)(int64, FRotator*))GetMKXAddr(0x140871820))(ptr, &TheMenu->camRot);
+			MK10::CamSetRot(ptr, &TheMenu->camRot);
+	}
+
+}
+
+void __fastcall MK10Hooks::HookActorCamSetPos(int64 ptr, FVector * pos)
+{
+	if (TheMenu->bCustomFOV)
+		*(float*)(ptr + 0x42C) = TheMenu->camFov;
+
+	float oneTime = 0.0f;
+	if (!TheMenu->bYObtained)
+	{
+		oneTime = pos->Y;
+		TheMenu->bYObtained = true;
+	}
+	if (TheMenu->bEnableCustomCameras)
+	{
+		FVector plrPos;
+		FVector p2;
+		MK10::GetCharacterPosition(&plrPos, PLAYER1);
+		MK10::GetCharacterPosition(&p2, PLAYER2);
+		switch (TheMenu->iCurrentCustomCamera)
+		{
+		case CAMERA_3RDPERSON:
+			pos->X = 5;
+			pos->Y = oneTime - 330.0f;
+			pos->Y += plrPos.Y * 0.85f;
+			pos->Z = 210.0f + plrPos.Z;
+
+			if (p2.Y < plrPos.Y)
+			{
+				pos->Y += 600.0f;
+				pos->Z = 210.0f;
+
+			}
+
+
+			TheMenu->camPos = *pos;
+			break;
+		case CAMERA_3RDPERSON2:
+			pos->X = 5;
+			pos->Y = oneTime - 230.0f;
+			pos->Y += plrPos.Y * 0.85f;
+			pos->Z = 260.0f + plrPos.Z;;
+
+			if (p2.Y < plrPos.Y)
+			{
+				pos->Y += 600.0f;
+				pos->Z = 260.0f;
+			}
+
+
+			TheMenu->camPos = *pos;
+			break;
+		case CAMERA_1STPERSON:
+			pos->X = -10.0f;
+			pos->Y = -230;
+			pos->Y += plrPos.Y - pos->Y;
+			if (p2.Y < plrPos.Y)
+				pos->Y += TheMenu->fAdjustCam * -1;
+			else
+				pos->Y += TheMenu->fAdjustCam;
+			pos->Z = 160.0f + plrPos.Z;
+
+
+			TheMenu->camPos = *pos;
+			break;
+		case CAMERA_1STPERSON_MID:
+			pos->X = 16.0f;
+			pos->Y = -230;
+			pos->Y += plrPos.Y - pos->Y;
+			if (p2.Y < plrPos.Y)
+				pos->Y += 23.0f * -1;
+			else
+				pos->Y += 23.0f;
+			pos->Z = 134.0f + plrPos.Z;
+
+
+			TheMenu->camPos = *pos;
+			break;
+		}
+		MK10::ActorCamSetPos(ptr, pos);
+	}
+	else
+	{
+		if (!TheMenu->bCustomCamera)
+		{
+			TheMenu->camPos = *pos;
+			MK10::ActorCamSetPos(ptr, pos);
+		}
+		else
+			MK10::ActorCamSetPos(ptr, &TheMenu->camPos);
+	}
+}
+
+void __fastcall MK10Hooks::HookActorCamSetRot(int64 ptr, FRotator * rot)
+{
+	if (TheMenu->bEnableCustomCameras)
+	{
+		FVector p1, p2;
+		switch (TheMenu->iCurrentCustomCamera)
+		{
+		case CAMERA_3RDPERSON:
+			rot->Pitch = -900;
+			rot->Yaw = 16000;
+			rot->Roll = 0;
+			TheMenu->camRot = *rot;
+			MK10::GetCharacterPosition(&p1, PLAYER1);
+			MK10::GetCharacterPosition(&p2, PLAYER2);
+
+			if (p2.Y < p1.Y)
+			{
+				rot->Yaw = -16000;
+				rot->Pitch = -900;
+			}
+
+			TheMenu->camRot = *rot;
+			break;
+		case CAMERA_3RDPERSON2:
+			rot->Pitch = -4000;
+			rot->Yaw = 16000;
+			rot->Roll = 0;
+			TheMenu->camRot = *rot;
+			MK10::GetCharacterPosition(&p1, PLAYER1);
+			MK10::GetCharacterPosition(&p2, PLAYER2);
+
+			if (p2.Y < p1.Y)
+			{
+				rot->Yaw = -16000;
+				rot->Pitch = -4000;
+			}
+
+			TheMenu->camRot = *rot;
+			break;
+		case CAMERA_1STPERSON:
+			rot->Pitch = 0;
+			rot->Yaw = 16000;
+			rot->Roll = 0;
+			TheMenu->camRot = *rot;
+			MK10::GetCharacterPosition(&p1, PLAYER1);
+			MK10::GetCharacterPosition(&p2, PLAYER2);
+
+			if (p2.Y < p1.Y)
+			{
+				rot->Yaw = -16000;
+			}
+
+			TheMenu->camRot = *rot;
+			break;
+		case CAMERA_1STPERSON_MID:
+			rot->Pitch = 0;
+			rot->Yaw = 16000;
+			rot->Roll = 0;
+			TheMenu->camRot = *rot;
+			MK10::GetCharacterPosition(&p1, PLAYER1);
+			MK10::GetCharacterPosition(&p2, PLAYER2);
+
+			if (p2.Y < p1.Y)
+			{
+				rot->Yaw = -16000;
+			}
+
+			TheMenu->camRot = *rot;
+			break;
+		}
+
+		MK10::ActorCamSetRot(ptr, rot);
+	}
+	else
+	{
+		if (!TheMenu->bCustomCameraRot)
+		{
+			TheMenu->camRot = *rot;
+			MK10::ActorCamSetRot(ptr, rot);
+		}
+		else
+			MK10::ActorCamSetRot(ptr, &TheMenu->camRot);
 	}
 
 }

@@ -111,6 +111,7 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="IniReader.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="utils\HookInit.hpp" />
     <ClInclude Include="utils\MemoryMgr.h" />
     <ClInclude Include="utils\Patterns.h" />
@@ -137,6 +138,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="utils\Patterns.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MKXHook.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

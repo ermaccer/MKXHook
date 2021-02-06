@@ -109,41 +109,53 @@ void OnInitializeHook()
 
 	}
 
-	InjectHook(GetMKXAddr(0x1400A171A), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14016F579), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14017C81D), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14017C88D), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14017D330), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14017D3B4), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14018EE52), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14018EF1C), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x140191382), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x1402D6993), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x1402EB663), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x1403079AB), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14030827B), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14030ADBA), tramp->Jump(MK10Hooks::HookCamSetRot));
-	InjectHook(GetMKXAddr(0x14058D170), tramp->Jump(MK10Hooks::HookCamSetRot));
+	if (!SettingsMgr->bGlobalCameraHook)
+	{
+		InjectHook(GetMKXAddr(0x1400A171A), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x14016F579), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x14017C81D), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x14017C88D), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x14017D330), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x14017D3B4), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x14018EE52), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x14018EF1C), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x140191382), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x1402D6993), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x1402EB663), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x1403079AB), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x14030827B), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x14030ADBA), tramp->Jump(MK10Hooks::HookCamSetRot));
+		InjectHook(GetMKXAddr(0x14058D170), tramp->Jump(MK10Hooks::HookCamSetRot));
 
 
-	InjectHook(GetMKXAddr(0x14009FB7A), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14017C810), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14017C880), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14017D321), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14017D3A5), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14018EE47), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14018EF28), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x1402D6984), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x1402EB656), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14030799F), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14030826F), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14030ADF3), tramp->Jump(MK10Hooks::HookCamSetPos));
-	InjectHook(GetMKXAddr(0x14058D161), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14009FB7A), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14017C810), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14017C880), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14017D321), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14017D3A5), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14018EE47), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14018EF28), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x1402D6984), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x1402EB656), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14030799F), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14030826F), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14030ADF3), tramp->Jump(MK10Hooks::HookCamSetPos));
+		InjectHook(GetMKXAddr(0x14058D161), tramp->Jump(MK10Hooks::HookCamSetPos));
+	}
+	else
+	{
+	  //  Nop(GetMKXAddr(0x14135B5C3), 8 * 6);
+
+		InjectHook(GetMKXAddr(0x14135B5FB), tramp->Jump(MK10Hooks::HookActorCamSetPos));
+		InjectHook(GetMKXAddr(0x14135B608), tramp->Jump(MK10Hooks::HookActorCamSetRot));
+	}
+
 
 	if (SettingsMgr->bEnableNPCVictoryPoses)
 	{
 		InjectHook(GetMKXAddr(0x1405543B6), tramp->Jump(MK10Hooks::HookGetCharacterVictory));
 	}
+
 
 
 }

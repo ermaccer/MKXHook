@@ -41,11 +41,21 @@ namespace MK10 {
 	int64 GetCharacterObject(PLAYER_NUM plr);
 	int64 GetCharacterInfo(PLAYER_NUM plr);
 
+	void SetCharacterScale(PLAYER_NUM plr, FVector* scale);
+
+
 	void  GetCharacterPosition(FVector* vec, PLAYER_NUM plr);
 	void  SetCharacterPosition(FVector* vec, PLAYER_NUM plr);
 
 	void  SetCharacterLife(int64 obj, float life);
 	void  SetCharacterMeter(int64 obj, float meter);
+
+	void __fastcall CamSetPos(int64 ptr, FVector* pos);
+	void __fastcall CamSetRot(int64 ptr, FRotator* rot);
+
+	void __fastcall ActorCamSetPos(int64 ptr, FVector* pos);
+	void __fastcall ActorCamSetRot(int64 ptr, FRotator* rot);
+
 }
 
 
@@ -62,6 +72,10 @@ namespace MK10Hooks {
 	void __fastcall HookDLCCellAmount(int64 ptr, int cells, int64 a3, int a4);
 	void __fastcall HookCamSetPos(int64 ptr, FVector* pos);
 	void __fastcall HookCamSetRot(int64 ptr, FRotator* rot);
+
+	void __fastcall HookActorCamSetPos(int64 ptr, FVector* pos);
+	void __fastcall HookActorCamSetRot(int64 ptr, FRotator* rot);
+
 	int64 __fastcall HookIsEasyFatalityAvailable(const char* name);
 
 	void __fastcall  Hook30To60Swap(int64 game, int a2);
@@ -70,6 +84,7 @@ namespace MK10Hooks {
 	void __fastcall  HookDamageMultiplierTwo(int64 ptr, float mult);
 	void __fastcall  HookDamageMultiplierThree(int64 ptr, float mult);
 	int64 __fastcall HookGetCharacterVictory(const char* name, const char* packageID, char* packageName, int packageBuffer);
+
 }
 
 
