@@ -138,6 +138,8 @@ void MK10Menu::Initialize()
 	bInfiniteSkipFights = false;
 	bInfiniteHealthPlayer1 = false;
 	bInfiniteHealthPlayer2 = false;
+	b0HealthPlayer1 = false;
+	b0HealthPlayer2 = false;
 	bInfiniteSuperBarPlayer1 = false;
 	bInfiniteSuperBarPlayer2 = false;
 	bPlayer1TraitEnabled = false;
