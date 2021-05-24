@@ -44,8 +44,10 @@ public:
 	bool bInfiniteSkipFights;
 	bool bStopTimer;
 	bool bInfiniteHealthPlayer1;
+	bool b0HealthPlayer1;
 	bool bInfiniteSuperBarPlayer1;
 	bool bInfiniteHealthPlayer2;
+	bool b0HealthPlayer1;
 	bool bInfiniteSuperBarPlayer2;
 
 
