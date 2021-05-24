@@ -227,6 +227,16 @@ void __fastcall MK10Hooks::HookProcessStuff()
 		if (MK10::GetCharacterObject(PLAYER2))
 			MK10::SetCharacterLife(MK10::GetCharacterObject(PLAYER2), 1000.0f);
 	}
+	if (TheMenu->b0HealthPlayer1)
+	{
+		if (MK10::GetCharacterObject(PLAYER1))
+			MK10::SetCharacterLife(MK10::GetCharacterObject(PLAYER1), 0.0f);
+	}
+	if (TheMenu->b0HealthPlayer2)
+	{
+		if (MK10::GetCharacterObject(PLAYER2))
+			MK10::SetCharacterLife(MK10::GetCharacterObject(PLAYER2), 0.0f);
+	}
 	if (TheMenu->bInfiniteSuperBarPlayer1)
 	{
 		if (MK10::GetCharacterInfo(PLAYER1))
