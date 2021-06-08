@@ -118,7 +118,7 @@ void MKCamera::HookedSetPosition(FVector * pos)
 			SetPosition(pos);
 		}
 		else
-			SetPosition(pos);
+			SetPosition(&TheMenu->camPos);
 	}
 
 }
