@@ -20,6 +20,11 @@ ImGui settings (position, size) are saved in imgui.ini in root folder.
 
 Some plugin features can be toggled on or off in the .ini.
 
+## Usage
+Press **F1** at any time to open the menu. 
+
+*This key can be changed!*
+
 ## Features
 
 ### Playable NPCS
