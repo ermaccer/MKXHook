@@ -5,7 +5,7 @@
 #define GFG_GAME_INFO 0x1430DBA00
 
 
-#define MKXHOOK_VERSION "0.5.4"
+#define MKXHOOK_VERSION "0.5.5"
 
 enum  PLAYER_NUM
 {

@@ -316,7 +316,7 @@ void __fastcall MK10Hooks::HookStartupFightRecording()
 		if (!TheMenu->bCustomTraitAppendP2)
 			MK10::ClearTraits(PLAYER2);
 		for (int i = 0; i < P2Traits.size(); i++)
-			MK10::SetTrait(PLAYER2, P1Traits[i].c_str());
+			MK10::SetTrait(PLAYER2, P2Traits[i].c_str());
 
 	}
 

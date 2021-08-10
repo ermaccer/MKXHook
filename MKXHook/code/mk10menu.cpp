@@ -7,6 +7,7 @@
 #include "eSettingsManager.h"
 #include <vector>
 #include <string>
+#include "eNotifManager.h"
 
 bool bShowMessageError = 0;
 
@@ -326,7 +327,7 @@ void MK10Menu::Draw()
 			ImGui::SliderInt("Variation", &iPlayer1Trait, 1, 3);
 			ImGui::Separator();
 			ImGui::Checkbox("Enable Player 2 Modifier", &bPlayer2ModifierEnabled);
-			ImGui::SameLine(); ShowHelpMarker("NB: Make sure you do not replace Shinnok boss fight, it'll crash.");
+			ImGui::SameLine(); ShowHelpMarker("NB: Make sure you do not replace Shinnok boss fight, game will crash.");
 			ImGui::Checkbox("Enable Player 2 Variation Modifier", &bPlayer2TraitEnabled);
 
 
@@ -455,7 +456,7 @@ void MK10Menu::Draw()
 			if (fSlowMotionSpeed > 2.0f) fSlowMotionSpeed = 2.0f;
 			if (fSlowMotionSpeed < 0.0f) fSlowMotionSpeed = 0.0f;
 			ImGui::Checkbox("Enable", &bSlowMotionEnabled);
-
+			ImGui::SameLine(); ShowHelpMarker("Hotkey - F5.");
 			ImGui::Separator();
 			ImGui::EndTabItem();
 		}
@@ -470,7 +471,7 @@ void MK10Menu::Draw()
 	
 
 			ImGui::Checkbox("Enable Freecam", &bFreeCameraMovement);
-			ImGui::SameLine(); ShowHelpMarker("Requires both toggles enabled!\n You can configure keys in .ini file.");
+			ImGui::SameLine(); ShowHelpMarker("Requires both toggles enabled!\nYou can configure keys in .ini file.");
 			ImGui::InputFloat("Freecam Speed", &fFreeCameraSpeed);
 			ImGui::InputInt("Freecam Rotation Speed", &iFreeCameraRotSpeed);
 
@@ -570,7 +571,12 @@ void MK10Menu::Draw()
 				int64 gallery = ((int64(__fastcall*)())_addr(0x140483C00))();
 
 				if (gallery)
+				{
 					((void(__fastcall*)(int64))_addr(0x1404A2150))(gallery);
+					Notifications->SetNotificationTime(5500);
+					Notifications->PushNotification("Costumes should be unlocked now, check costumes list in select screen.");
+				}
+
 			}
 
 
