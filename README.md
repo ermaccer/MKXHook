@@ -6,7 +6,7 @@ A plugin for Mortal Kombat X.
 
 ####  MKXHook only works with latest Steam version!
 
-You can download binary files from [Releases](https://github.com/ermaccer/MKXHook/) page. Extract **mk11hook.zip**
+You can download binary files from [Releases](https://github.com/ermaccer/MKXHook/) page. Extract **mkxhook.zip**
 to Binaries\Retail folder of Mortal Kombat X.
 
 If you are not sure how to find your Mortal Kombat X folder, search for it in your Steam library then right click on the entry and select Manage->Browse local files.
