@@ -106,7 +106,8 @@ public:
 	
 	bool bEnableRandomFights;
 	bool bFreezeWorld;
-
+	bool bHookDispatch;
+	bool bForceMoveCamera;
 
 	void Initialize();
 	void Process();

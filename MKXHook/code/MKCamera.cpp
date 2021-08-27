@@ -1,9 +1,11 @@
 #include "mkcamera.h"
 #include "mk10menu.h"
 #include <iostream>
+MKCamera* TheCamera;
 
 void MKCamera::SetPosition(FVector * pos)
 {
+	TheCamera = this;
 	*(float*)(this + 0x414) = pos->X;
 	*(float*)(this + 0x414 + 4) = pos->Y;
 	*(float*)(this + 0x414 + 8) = pos->Z;
@@ -12,6 +14,7 @@ void MKCamera::SetPosition(FVector * pos)
 
 void MKCamera::SetRotation(FRotator * rot)
 {
+	TheCamera = this;
 	*(int*)(this + 0x414 + 12) = rot->Pitch;
 	*(int*)(this + 0x414 + 12 + 4) = rot->Yaw;
 	*(int*)(this + 0x414 + 12 + 8) = rot->Roll;

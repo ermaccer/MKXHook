@@ -244,12 +244,10 @@ void MK10Menu::Initialize()
 	bPlayer2ModifierEnabled = false;
 	bSlowMotionEnabled = 0;
 	fSlowMotionSpeed = 0.5f;
-
 	b0HealthPlayer1 = false;
 	b0HealthPlayer2 = false;
 	b1HealthPlayer1 = false;
 	b1HealthPlayer2 = false;
-
 	bInfiniteHealthPlayer1 = false;
 	bInfiniteHealthPlayer2 = false;
 	bInfiniteSuperBarPlayer1 = false;
@@ -259,36 +257,43 @@ void MK10Menu::Initialize()
 	bEnableRandomFights = false;
 	bFreezePosition = false;
 	bEnableCustomCameras = false;
-	iCurrentCustomCamera = -1;
-	iPlayer1Trait = 1;
-	iPlayer2Trait = 1;
-	fFreeCameraSpeed = 5.25f;
-	iFreeCameraRotSpeed = 120;
-	bStopTimer = false;
-	bYObtained = false;
-	iCurrentTab = 0;
-	bStageModifier = false;
-	bChangePlayerSpeed = false;
-	fPlayer1Speed = 1.0f;
-	fPlayer2Speed = 1.0f;
-	sprintf(szPlayer1ModifierCharacter, szCharacters[0]);
-	sprintf(szPlayer2ModifierCharacter, szCharacters[0]);
-	sprintf(szCurrentCameraOption, szCameraModes[0]);
-	sprintf(szStageModifierStage, szStageNames[0]);
-
-	sprintf(szPlayer1Trait, szTraits[0]);
-	sprintf(szPlayer2Trait, szTraits[0]);
-	fAdjustCam = 30.0f;
-	bChangePlayerScale = false;
-	fPlayer1Scale = { 1.0f,1.0f,1.0f };
-	fPlayer2Scale = { 1.0f,1.0f,1.0f };
-	bFreezeWorld = false;
-	camFov = 0;
 	bCustomFOV = false;
 	bCustomTraitsP1 = false;
 	bCustomTraitsP2 = false;
 	bCustomTraitAppendP1 = false;
 	bCustomTraitAppendP2 = false;
+	bStageModifier = false;
+	bChangePlayerSpeed = false;
+	bStopTimer = false;
+	bYObtained = false;
+	bChangePlayerScale = false;
+	bFreezeWorld = false;
+	bHookDispatch = false;
+	bForceMoveCamera = false;
+	iCurrentCustomCamera = -1;
+	iPlayer1Trait = 1;
+	iPlayer2Trait = 1;
+	fFreeCameraSpeed = 5.25f;
+	iFreeCameraRotSpeed = 120;
+	fPlayer1Speed = 1.0f;
+	fPlayer2Speed = 1.0f;
+	iCurrentTab = 0;
+	fAdjustCam = 30.0f;
+
+	fPlayer1Scale = { 1.0f,1.0f,1.0f };
+	fPlayer2Scale = { 1.0f,1.0f,1.0f };
+
+	camFov = 0;
+
+	sprintf(szPlayer1ModifierCharacter, szCharacters[0]);
+	sprintf(szPlayer2ModifierCharacter, szCharacters[0]);
+	sprintf(szCurrentCameraOption, szCameraModes[0]);
+	sprintf(szStageModifierStage, szStageNames[0]);
+	sprintf(szPlayer1Trait, szTraits[0]);
+	sprintf(szPlayer2Trait, szTraits[0]);
+
+
+
 
 	printf("MKXHook::Initialize() | Menu initialize\n");
 }
@@ -448,56 +453,6 @@ void MK10Menu::Draw()
 			}
 			ImGui::EndTabItem();
 		}
-		if (ImGui::BeginTabItem("Speed Modifier"))
-		{
-			ImGui::Text("Gamespeed Control");
-			ImGui::InputFloat("", &fSlowMotionSpeed, 0.1);
-
-			if (fSlowMotionSpeed > 2.0f) fSlowMotionSpeed = 2.0f;
-			if (fSlowMotionSpeed < 0.0f) fSlowMotionSpeed = 0.0f;
-			ImGui::Checkbox("Enable", &bSlowMotionEnabled);
-			ImGui::SameLine(); ShowHelpMarker("Hotkey - F5.");
-			ImGui::Separator();
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Camera Control"))
-		{
-			ImGui::Checkbox("Custom Camera Position", &bCustomCamera);
-			ImGui::InputFloat3("X | Y | Z", &camPos.X);
-			ImGui::Checkbox("Custom Camera Rotation", &bCustomCameraRot);
-			ImGui::InputInt3("Pitch | Yaw | Roll", &camRot.Pitch);
-			ImGui::Checkbox("Custom FOV", &bCustomFOV);
-			ImGui::InputFloat("FOV", &camFov);
-	
-
-			ImGui::Checkbox("Enable Freecam", &bFreeCameraMovement);
-			ImGui::SameLine(); ShowHelpMarker("Requires both toggles enabled!\nYou can configure keys in .ini file.");
-			ImGui::InputFloat("Freecam Speed", &fFreeCameraSpeed);
-			ImGui::InputInt("Freecam Rotation Speed", &iFreeCameraRotSpeed);
-
-
-			ImGui::Separator();
-
-			ImGui::Checkbox("Custom Cameras", &bEnableCustomCameras);
-
-			if (ImGui::BeginCombo("Mode", szCurrentCameraOption))
-			{
-				for (int n = 0; n < IM_ARRAYSIZE(szCameraModes); n++)
-				{
-					bool is_selected = (szCurrentCameraOption == szCameraModes[n]);
-					if (ImGui::Selectable(szCameraModes[n], is_selected))
-						sprintf(szCurrentCameraOption, szCameraModes[n]);
-					if (is_selected)
-						ImGui::SetItemDefaultFocus();
-
-				}
-				ImGui::EndCombo();
-			}
-			iCurrentCustomCamera = GetCamMode(szCurrentCameraOption);
-			ImGui::InputFloat("FPS Camera Offset", &fAdjustCam);
-
-			ImGui::EndTabItem();
-		}
 		if (ImGui::BeginTabItem("Player Control"))
 		{
 			ImGui::Checkbox("Change Player Speed", &bChangePlayerSpeed);
@@ -535,6 +490,72 @@ void MK10Menu::Draw()
 				MK10::GetCharacterPosition(&plrPos2, PLAYER2);
 				ImGui::InputFloat3("X | Y | Z", &plrPos2.X);
 			}
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Speed Modifier"))
+		{
+			ImGui::Text("Gamespeed Control");
+			ImGui::InputFloat("", &fSlowMotionSpeed, 0.1);
+
+			if (fSlowMotionSpeed > 2.0f) fSlowMotionSpeed = 2.0f;
+			if (fSlowMotionSpeed < 0.0f) fSlowMotionSpeed = 0.0f;
+			ImGui::Checkbox("Enable", &bSlowMotionEnabled);
+			ImGui::SameLine(); ShowHelpMarker("Hotkey - F5.");
+
+
+			ImGui::Separator();
+			ImGui::Text("Tick this checkbox if you want to freeze game with a button, this might cause\nissues with pause menus and stuff so enable only when needed!");
+			ImGui::Checkbox("Hook Freeze World", &bHookDispatch);
+
+			if (bHookDispatch)
+			{
+				ImGui::Checkbox("Freeze World", &bFreezeWorld);
+				ImGui::SameLine();
+				ShowHelpMarker("Hotkey - F2");
+			}
+
+			ImGui::Separator();
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Camera Control"))
+		{
+			ImGui::Checkbox("Custom Camera Position", &bCustomCamera);
+			ImGui::InputFloat3("X | Y | Z", &camPos.X);
+			ImGui::Checkbox("Custom Camera Rotation", &bCustomCameraRot);
+			ImGui::InputInt3("Pitch | Yaw | Roll", &camRot.Pitch);
+			ImGui::Checkbox("Custom FOV", &bCustomFOV);
+			ImGui::InputFloat("FOV", &camFov);
+	
+
+			ImGui::Checkbox("Enable Freecam", &bFreeCameraMovement);
+			ImGui::SameLine(); ShowHelpMarker("Requires both toggles enabled!\nYou can configure keys in .ini file.");
+			ImGui::InputFloat("Freecam Speed", &fFreeCameraSpeed);
+			ImGui::InputInt("Freecam Rotation Speed", &iFreeCameraRotSpeed);
+
+			ImGui::Separator();
+			ImGui::Text("Check this option if the game you can't move camera anymore after fatalities or win poses.");
+			ImGui::Checkbox("Force Camera To Move", &bForceMoveCamera);
+
+			ImGui::Separator();
+
+			ImGui::Checkbox("Custom Cameras", &bEnableCustomCameras);
+
+			if (ImGui::BeginCombo("Mode", szCurrentCameraOption))
+			{
+				for (int n = 0; n < IM_ARRAYSIZE(szCameraModes); n++)
+				{
+					bool is_selected = (szCurrentCameraOption == szCameraModes[n]);
+					if (ImGui::Selectable(szCameraModes[n], is_selected))
+						sprintf(szCurrentCameraOption, szCameraModes[n]);
+					if (is_selected)
+						ImGui::SetItemDefaultFocus();
+
+				}
+				ImGui::EndCombo();
+			}
+			iCurrentCustomCamera = GetCamMode(szCurrentCameraOption);
+			ImGui::InputFloat("FPS Camera Offset", &fAdjustCam);
+
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem("Cheats"))
@@ -598,6 +619,16 @@ void MK10Menu::UpdateControls()
 		bSlowMotionEnabled ^= 1;
 	}
 
+	if (GetAsyncKeyState(VK_F2))
+	{
+		if (bHookDispatch)
+		{
+			if (GetTickCount64() - timer <= 150) return;
+			timer = GetTickCount64();
+			bFreezeWorld ^= 1;
+		}
+
+	}
 	if (bSlowMotionEnabled)
 	{
 		if (GetAsyncKeyState(VK_F6))

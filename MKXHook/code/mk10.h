@@ -5,7 +5,7 @@
 #define GFG_GAME_INFO 0x1430DBA00
 
 
-#define MKXHOOK_VERSION "0.5.5"
+#define MKXHOOK_VERSION "0.5.6"
 
 enum  PLAYER_NUM
 {
@@ -37,7 +37,7 @@ namespace MK10 {
 
 	void  GetCharacterPosition(FVector* vec, PLAYER_NUM plr);
 	void  SetCharacterPosition(FVector* vec, PLAYER_NUM plr);
-
+	void  SetCharacterMeter(int64 obj, float meter);
 
 }
 
@@ -58,6 +58,8 @@ namespace MK10Hooks {
 	void __fastcall  HookDamageMultiplierThree(int64 ptr, float mult);
 	int64 __fastcall HookGetCharacterVictory(const char* name, const char* packageID, char* packageName, int packageBuffer);
 
+
+	void   HookDispatch(int64 ptr, int a2);
 }
 
 

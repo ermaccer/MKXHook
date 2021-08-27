@@ -39,9 +39,6 @@
     <ClInclude Include="utils\MemoryMgr.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\Patterns.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
     <ClInclude Include="utils\Trampoline.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
@@ -50,9 +47,6 @@
     </ClInclude>
     <ClInclude Include="code\mk10utils.h">
       <Filter>Header Files\code</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\HookInit.hpp">
-      <Filter>Header Files\utils</Filter>
     </ClInclude>
     <ClInclude Include="IniReader.h">
       <Filter>Header Files</Filter>
@@ -137,9 +131,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="utils\Patterns.cpp">
-      <Filter>Header Files\utils</Filter>
-    </ClCompile>
     <ClCompile Include="code\mk10utils.cpp">
       <Filter>Header Files\code</Filter>
     </ClCompile>
@@ -202,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="code\eNotifManager.cpp">
       <Filter>Header Files\code</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp">
+      <Filter>Header Files\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

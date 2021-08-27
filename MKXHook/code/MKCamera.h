@@ -11,3 +11,5 @@ public:
 	void HookedSetPosition(FVector* pos);
 	void HookedSetRotation(FRotator* rot);
 };
+
+extern MKCamera* TheCamera;

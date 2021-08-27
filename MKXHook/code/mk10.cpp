@@ -3,9 +3,9 @@
 #include "mk10utils.h"
 #include "mk10menu.h"
 #include <iostream>
-#include "..\dxhook.h"
 #include "eSettingsManager.h"
 #include "eNotifManager.h"
+#include "MKCamera.h"
 #include <imgui.h>
 
 
@@ -127,6 +127,11 @@ void MK10::SetCharacterPosition(FVector * vec, PLAYER_NUM plr)
 	((int64(__fastcall*)(int64, FVector*))_addr(0x140CBF720))(ptr, vec);
 }
 
+void MK10::SetCharacterMeter(int64 obj, float meter)
+{
+	((void(__fastcall*)(int64, float))_addr(0x14055EC40))(obj, meter);
+}
+
 int64 MK10Hooks::IsNPCCharacter(const char * character)
 {
 	int64 result = 0;
@@ -193,7 +198,7 @@ void __fastcall MK10Hooks::HookProcessStuff()
 		if (TheMenu->b1HealthPlayer1)
 			MK10::GetCharacterObject(PLAYER1)->SetLife(0.01f);
 		if (TheMenu->bInfiniteSuperBarPlayer1)
-			MK10::GetCharacterObject(PLAYER1)->SetMeter(1.0f);
+			MK10::SetCharacterMeter(MK10::GetCharacterInfo(PLAYER1), 1.0f);
 	}
 	if (MK10::GetCharacterObject(PLAYER2))
 	{
@@ -204,7 +209,7 @@ void __fastcall MK10Hooks::HookProcessStuff()
 		if (TheMenu->b1HealthPlayer2)
 			MK10::GetCharacterObject(PLAYER2)->SetLife(0.01f);
 		if (TheMenu->bInfiniteSuperBarPlayer2)
-			MK10::GetCharacterObject(PLAYER2)->SetMeter(1.0f);
+			MK10::SetCharacterMeter(MK10::GetCharacterInfo(PLAYER2), 1.0f);
 	}
 
 
@@ -256,7 +261,16 @@ void __fastcall MK10Hooks::HookProcessStuff()
 		MK10::SetCharacterPosition(&TheMenu->plrPos, PLAYER2);
 	}
 
+	if (TheMenu->bForceMoveCamera)
+	{
+		if (TheCamera)
+		{
+			TheCamera->HookedSetPosition(&TheMenu->camPos);
+			TheCamera->HookedSetRotation(&TheMenu->camRot);
+			TheCamera->SetFOV(TheMenu->camFov);
+		}
 
+	}
 
 	
 
@@ -378,4 +392,23 @@ int64 __fastcall MK10Hooks::HookGetCharacterVictory(const char * name, const cha
 	}
 
 	return ((int64(__fastcall*)(const char*, const char*, char*, int))_addr(0x140553850))(newName,packageID,packageName,packageBuffer);
+}
+
+void MK10Hooks::HookDispatch(int64 ptr, int a2)
+{
+	if (TheMenu->bHookDispatch)
+	{
+		int64 arg = *(int64*)(ptr);
+
+		if (!TheMenu->bFreezeWorld)
+			a2 = *(uint32_t*)(ptr + 0x18);
+
+		if (*(uint32_t*)(ptr + 0x14) == a2)
+			return;
+
+		*(int*)(ptr + 0x14) = a2;
+		((void(*)(int64, int))*(int64*)(arg + 0xD8))(ptr, a2);
+	}
+	else
+		((int64(__fastcall*)(int64, int))_addr(0x140875590))(ptr, a2);
 }

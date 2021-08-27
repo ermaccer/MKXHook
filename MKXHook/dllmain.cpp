@@ -4,7 +4,6 @@
 #include "pch.h"
 #include "utils/MemoryMgr.h"
 #include "utils/Trampoline.h"
-#include "utils/Patterns.h"
 #include "code/mk10.h"
 #include "code/mk10utils.h"
 #include "code/mk10menu.h"
@@ -131,6 +130,8 @@ void OnInitializeHook()
 
 	InjectHook(_addr(0x14135B5FB), tramp->Jump(&MKCamera::HookedSetPosition));
 	InjectHook(_addr(0x14135B608), tramp->Jump(&MKCamera::HookedSetRotation));
+
+	InjectHook(_addr(0x140029E7F), tramp->Jump(MK10Hooks::HookDispatch));
 
 	if (SettingsMgr->bEnableNPCVictoryPoses)
 	{
