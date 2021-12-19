@@ -11,9 +11,9 @@ void eSettingsManager::Init()
 	bDisableAssetHashChecking = ini.ReadBoolean("Settings", "bDisableAssetHashChecking", false);
 	bEnableNPCFatalities =  ini.ReadBoolean("Settings", "bEnableNPCFatalities", false);
 	bFixNPCGenderFatalityMessage = ini.ReadBoolean("Settings", "bFixNPCGenderFatalityMessage", false);
-	bEnable60FPSFrontend = ini.ReadBoolean("Settings", "bEnable60FPSPatch", false);
+	bEnable60FPSFrontend = ini.ReadBoolean("Settings", "bEnable60FPSPatch", true);
 	bDisableSweatEffects = ini.ReadBoolean("Settings", "bDisableSweatEffects", false);
-
+	bEnableGamepadSupport = ini.ReadBoolean("Settings", "bEnableGamepadSupport", true);
 	iHookMenuOpenKey = ini.ReadInteger("Settings", "iHookMenuOpenKey", VK_F1);
 
 
@@ -43,4 +43,29 @@ void eSettingsManager::Init()
 
 	bDisableComboDamageScaling = ini.ReadBoolean("Settings", "bDisableComboDamageScaling", false);
 	bEnableNPCVictoryPoses = ini.ReadBoolean("Settings", "bEnableNPCVictoryPoses", false);
+
+	CIniReader user("mkxhook_user.ini");
+	fMenuScale = user.ReadFloat("MenuSettings", "fMenuScale", 1.0f);
+
+	if (fMenuScale < 1.0f)
+		fMenuScale = 1.0f;
+
+}
+
+void eSettingsManager::SaveSettings()
+{
+	CIniReader user("mkxhook_user.ini");
+	user.WriteFloat("MenuSettings", "fMenuScale", fMenuScale);
+
+	CIniReader ini("");
+	ini.WriteBoolean("Settings", "bEnableGamepadSupport", bEnableGamepadSupport);
+	ini.WriteBoolean("Settings", "bEnableConsoleWindow", bEnableConsoleWindow);
+	ini.WriteBoolean("Settings", "bDisableComboDamageScaling", bDisableComboDamageScaling);
+	ini.WriteBoolean("Settings", "bDisableAssetHashChecking", bDisableAssetHashChecking);
+	ini.WriteBoolean("Settings", "bDisableSweatEffects", bDisableSweatEffects);
+	ini.WriteBoolean("Settings", "bEnable60FPSPatch", bEnable60FPSFrontend);
+	ini.WriteBoolean("Settings", "bFixNPCGenderFatalityMessage", bFixNPCGenderFatalityMessage);
+	ini.WriteBoolean("Settings", "bEnableNPCVictoryPoses", bEnableNPCVictoryPoses);
+	ini.WriteBoolean("Settings", "bEnableNPCFatalities", bEnableNPCFatalities);
+
 }

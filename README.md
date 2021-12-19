@@ -19,6 +19,24 @@ Archive breakdown:
 
 
 
+## NOTE
+Since some people might use this plugin for 60 fps patch only, download the `_60only.zip` archive.
+
+# Controller Support
+Any XInput compatible gamepad should work.
+
+## Gamepad Controls
+| Button | Effect |
+| --- | --- |
+| L3 + R3 | Open/Close menu|
+| X | Adjust menu|
+| A | Select |
+| B | Back |
+| D-Pad | Move/ Scale menu in adjust mode |
+| Left Stick | Move menu in adjust mode |
+
+Gamepad support can be disabled in the .ini file by setting **bEnableGamepadSupport** to false.
+
 **NOTE: You might need to turn off in-game V-Sync if 60 fps patch is not applied!**
 
 **NOTE: This will work with DX11 (default) only! If you use DX10 or DX9 switches, please remove them.**

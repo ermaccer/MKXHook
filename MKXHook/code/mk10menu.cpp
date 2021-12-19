@@ -8,8 +8,8 @@
 #include <vector>
 #include <string>
 #include "eNotifManager.h"
+#include "..\eDirectX11Hook.h"
 
-bool bShowMessageError = 0;
 
 std::vector<std::string> P1Traits;
 std::vector<std::string> P2Traits;
@@ -238,50 +238,42 @@ static void ShowHelpMarker(const char* desc)
 
 void MK10Menu::Initialize()
 {
-	bFocused = false;
-	bIsActive = false;
-	bPlayer1ModifierEnabled = false;
-	bPlayer2ModifierEnabled = false;
-	bSlowMotionEnabled = 0;
-	fSlowMotionSpeed = 0.5f;
-	b0HealthPlayer1 = false;
-	b0HealthPlayer2 = false;
-	b1HealthPlayer1 = false;
-	b1HealthPlayer2 = false;
-	bInfiniteHealthPlayer1 = false;
-	bInfiniteHealthPlayer2 = false;
-	bInfiniteSuperBarPlayer1 = false;
-	bInfiniteSuperBarPlayer2 = false;
-	bPlayer1TraitEnabled = false;
-	bPlayer2TraitEnabled = false;
-	bEnableRandomFights = false;
-	bFreezePosition = false;
-	bEnableCustomCameras = false;
-	bCustomFOV = false;
-	bCustomTraitsP1 = false;
-	bCustomTraitsP2 = false;
-	bCustomTraitAppendP1 = false;
-	bCustomTraitAppendP2 = false;
-	bStageModifier = false;
-	bChangePlayerSpeed = false;
-	bStopTimer = false;
-	bYObtained = false;
-	bChangePlayerScale = false;
-	bFreezeWorld = false;
-	bHookDispatch = false;
-	bForceMoveCamera = false;
-	iCurrentCustomCamera = -1;
-	iPlayer1Trait = 1;
-	iPlayer2Trait = 1;
-	fFreeCameraSpeed = 5.25f;
-	iFreeCameraRotSpeed = 120;
-	fPlayer1Speed = 1.0f;
-	fPlayer2Speed = 1.0f;
-	iCurrentTab = 0;
-	fAdjustCam = 30.0f;
+	m_bIsFocused = false;
+	m_bIsActive = false;
+	m_bPlayer1Modifier = false;
+	m_bPlayer2Modifier = false;
+	m_bSlowMotion = 0;
+	m_fSlowMotionSpeed = 0.5f;
+	m_bNoHealthP1 = false;
+	m_bNoHealthP2 = false;
+	m_bOneHealthP1 = false;
+	m_bOneHealthP2 = false;
+	m_bInfiniteHealthP1 = false;
+	m_bInfiniteHealthP2 = false;
+	m_bInfiniteMeterP1 = false;
+	m_bInfiniteMeterP2 = false;
+	m_bCustomCameras = false;
+	m_bCustomCameraFOV = false;
+	m_bPlayer1CustomTrait = false;
+	m_bPlayer2CustomTrait = false;
+	m_bStageModifier = false;
+	m_bChangePlayerSpeed = false;
+	m_bStopTimer = false;
+	m_bYObtained = false;
+	m_bChangePlayerScale = false;
+	m_bFreezeWorld = false;
+	m_bHookDispatch = false;
+	m_bForceCameraUpdate = false;
+	m_bAutoHideHUD = false;
+	m_nCurrentCustomCamera = -1;
+	m_fFreeCameraSpeed = 5.25f;
+	m_nFreeCameraRotationSpeed = 120;
+	m_fP1Speed = 1.0f;
+	m_fP2Speed = 1.0f;
+	m_fAdjustCam = 30.0f;
 
-	fPlayer1Scale = { 1.0f,1.0f,1.0f };
-	fPlayer2Scale = { 1.0f,1.0f,1.0f };
+	m_vP1Scale = { 1.0f,1.0f,1.0f };
+	m_vP2Scale = { 1.0f,1.0f,1.0f };
 
 	camFov = 0;
 
@@ -292,10 +284,6 @@ void MK10Menu::Initialize()
 	sprintf(szPlayer1Trait, szTraits[0]);
 	sprintf(szPlayer2Trait, szTraits[0]);
 
-
-
-
-	printf("MKXHook::Initialize() | Menu initialize\n");
 }
 
 void MK10Menu::Process()
@@ -306,15 +294,24 @@ void MK10Menu::Process()
 void MK10Menu::Draw()
 {
 	ImGui::GetIO().MouseDrawCursor = true;
-	ImGui::Begin(GetMKXHookVersion());
+	ImGui::Begin(GetMKXHookVersion(),&m_bIsActive, ImGuiWindowFlags_MenuBar);
+
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("Settings"))
+		{
+			m_bSubmenuActive[SUBMENU_SETTINGS] = true;
+			ImGui::EndMenu();
+		}
+	}
+	ImGui::EndMenuBar();
+
 	if (ImGui::BeginTabBar("##tabs"))
 	{
 		if (ImGui::BeginTabItem("Character Modifier"))
 		{
-			ImGui::Checkbox("Enable Player 1 Modifier", &bPlayer1ModifierEnabled);
+			ImGui::Checkbox("Enable Player 1 Modifier", &m_bPlayer1Modifier);
 			ImGui::SameLine(); ShowHelpMarker("It does not matter who you choose at character select screen, character will be changed upon match start. Works in all game modes");
-			ImGui::Checkbox("Enable Player 1 Variation Modifier", &bPlayer1TraitEnabled);
-
 
 			if (ImGui::BeginCombo("Player 1 Character", szPlayer1ModifierCharacter))
 			{
@@ -329,13 +326,9 @@ void MK10Menu::Draw()
 				}
 				ImGui::EndCombo();
 			}
-			ImGui::SliderInt("Variation", &iPlayer1Trait, 1, 3);
 			ImGui::Separator();
-			ImGui::Checkbox("Enable Player 2 Modifier", &bPlayer2ModifierEnabled);
+			ImGui::Checkbox("Enable Player 2 Modifier", &m_bPlayer2Modifier);
 			ImGui::SameLine(); ShowHelpMarker("NB: Make sure you do not replace Shinnok boss fight, game will crash.");
-			ImGui::Checkbox("Enable Player 2 Variation Modifier", &bPlayer2TraitEnabled);
-
-
 
 			if (ImGui::BeginCombo("Player 2 Character", szPlayer2ModifierCharacter))
 			{
@@ -349,22 +342,20 @@ void MK10Menu::Draw()
 				}
 				ImGui::EndCombo();
 			}
-			ImGui::SliderInt("Variation ", &iPlayer2Trait, 1, 3);
 			ImGui::Separator();
-			ImGui::Checkbox("Enable Random Fights", &bEnableRandomFights);
-			ImGui::SameLine(); ShowHelpMarker("This will randomize P1 character each fight, Costumes are not available as they would pad list too much");
+
 
 
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem("Variation Manager"))
 		{
-			ImGui::Text("You can load non default variations for all characters.\nMultiple variations can be loaded for"
-				" one character.\nIf this setting is on, Character Modifier variation toggles are ignored.");
-			ImGui::Text("Cyber Sub-Zero is not a variation. There's a high chance of crashing the game so be aware!");
+			ImGui::TextWrapped("You can load non default variations for all characters. Multiple variations can be loaded for"
+				" one character.");
+			ImGui::TextWrapped("Cyber Sub-Zero is not a variation. There's a high chance of crashing the game so be aware!");
 			ImGui::Separator();
 
-			ImGui::Checkbox("Enable P1 Custom Variations", &bCustomTraitsP1);
+			ImGui::Checkbox("Enable P1 Custom Variations", &m_bPlayer1CustomTrait);
 
 			if (ImGui::BeginCombo("Variation (P1)", szPlayer1Trait))
 			{
@@ -397,7 +388,7 @@ void MK10Menu::Draw()
 			}
 
 			ImGui::Separator();
-			ImGui::Checkbox("Enable P2 Custom Variations", &bCustomTraitsP2);
+			ImGui::Checkbox("Enable P2 Custom Variations", &m_bPlayer2CustomTrait);
 			if (ImGui::BeginCombo("Variation (P2)", szPlayer2Trait))
 			{
 				for (int n = 0; n < IM_ARRAYSIZE(szTraits); n++)
@@ -425,18 +416,14 @@ void MK10Menu::Draw()
 			ImGui::Text("Traits to use:");
 			for (int i = 0; i < P2Traits.size(); i++)
 			{
-				ImGui::Text("%d %s",i  + 1,P2Traits[i].c_str());
+				ImGui::Text("%d %s", i + 1, P2Traits[i].c_str());
 			}
 
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem("Stage Modifier"))
 		{
-			bool reset = ImGui::Button("Reset Stage Objects");
-			if (reset)
-				MK10::ResetStageInteractables();
-
-			ImGui::Checkbox("Enable Stage Modifier", &bStageModifier);
+			ImGui::Checkbox("Enable Stage Modifier", &m_bStageModifier);
 
 			if (ImGui::BeginCombo("Stage", szStageModifierStage))
 			{
@@ -451,65 +438,80 @@ void MK10Menu::Draw()
 				}
 				ImGui::EndCombo();
 			}
+
+			if (ImGui::Button("Reset Stage Objects"))
+				ResetStageInteractables();
+
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem("Player Control"))
 		{
-			ImGui::Checkbox("Change Player Speed", &bChangePlayerSpeed);
-			ImGui::SliderFloat("Player 1", &fPlayer1Speed, 0.0, 10.0f);
-			ImGui::SliderFloat("Player 2", &fPlayer2Speed, 0.0, 10.0f);
+			if (GetObj(PLAYER1) && GetObj(PLAYER2))
+			{
+				ImGui::Checkbox("Change Player Speed", &m_bChangePlayerSpeed);
+				ImGui::SliderFloat("Player 1", &m_fP1Speed, 0.0, 10.0f);
+				ImGui::SliderFloat("Player 2", &m_fP2Speed, 0.0, 10.0f);
+				if (ImGui::Button("Reset Speed"))
+				{
+					m_fP1Speed = 1.0f;
+					m_fP2Speed = 1.0f;
+					if (GetObj(PLAYER1))
+						GetObj(PLAYER1)->SetSpeed(m_fP1Speed);
+					if (GetObj(PLAYER2))
+						GetObj(PLAYER2)->SetSpeed(m_fP1Speed);
+				}
 
-			bool reset = ImGui::Button("Reset Speed");
-			if (reset)
-			{
-				fPlayer1Speed = 1.0f;
-				fPlayer2Speed = 1.0f;
-			}
-			ImGui::Separator();
-			ImGui::Checkbox("Change Player Scale", &bChangePlayerScale);
-			ImGui::InputFloat3("Player 1 ", &fPlayer1Scale.X);
-			ImGui::InputFloat3("Player 2 ", &fPlayer2Scale.X);
+				ImGui::Checkbox("Change Player Scale", &m_bChangePlayerScale);
+				ImGui::InputFloat3("Player 1 ", &m_vP1Scale.X);
+				ImGui::InputFloat3("Player 2 ", &m_vP2Scale.X);
 
-			bool scale_reset = ImGui::Button("Reset Scale");
-			if (scale_reset)
-			{
-				fPlayer1Scale = { 1.0f,1.0f,1.0f };
-				fPlayer2Scale = { 1.0f,1.0f,1.0f };
-			}
+				if (ImGui::Button("Reset Scale"))
+				{
+					m_vP1Scale = { 1.0f,1.0f,1.0f };
+					m_vP2Scale = { 1.0f,1.0f,1.0f };
+					if (GetObj(PLAYER1))
+						GetObj(PLAYER1)->SetScale(&m_vP1Scale);
+					if (GetObj(PLAYER2))
+						GetObj(PLAYER2)->SetScale(&m_vP2Scale);
+				}
 
-			ImGui::Separator();
-			ImGui::Text("Position");
-			ImGui::SameLine(); ShowHelpMarker("Preview only!");
-			if (MK10::GetCharacterObject(PLAYER1))
-			{
-				MK10::GetCharacterPosition(&plrPos, PLAYER1);
-				ImGui::InputFloat3("X | Y | Z", &plrPos.X);
+
+				ImGui::Separator();
+				ImGui::Text("Position");
+				ImGui::SameLine(); ShowHelpMarker("Read only!");
+				if (GetObj(PLAYER1))
+				{
+					GetCharacterPosition(&plrPos, PLAYER1);
+					ImGui::InputFloat3("X | Y | Z", &plrPos.X);
+				}
+				if (GetObj(PLAYER2))
+				{
+					GetCharacterPosition(&plrPos2, PLAYER2);
+					ImGui::InputFloat3("X | Y | Z", &plrPos2.X);
+				}
 			}
-			if (MK10::GetCharacterObject(PLAYER2))
-			{
-				MK10::GetCharacterPosition(&plrPos2, PLAYER2);
-				ImGui::InputFloat3("X | Y | Z", &plrPos2.X);
-			}
+			else
+				ImGui::Text("Player options are only available in-game!");
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem("Speed Modifier"))
 		{
 			ImGui::Text("Gamespeed Control");
-			ImGui::InputFloat("", &fSlowMotionSpeed, 0.1);
+			ImGui::InputFloat("", &m_fSlowMotionSpeed, 0.1f);
 
-			if (fSlowMotionSpeed > 2.0f) fSlowMotionSpeed = 2.0f;
-			if (fSlowMotionSpeed < 0.0f) fSlowMotionSpeed = 0.0f;
-			ImGui::Checkbox("Enable", &bSlowMotionEnabled);
+			if (m_fSlowMotionSpeed > 2.0f) m_fSlowMotionSpeed = 2.0f;
+			if (m_fSlowMotionSpeed < 0.0f) m_fSlowMotionSpeed = 0.0f;
+			ImGui::Checkbox("Enable", &m_bSlowMotion);
 			ImGui::SameLine(); ShowHelpMarker("Hotkey - F5.");
 
 
 			ImGui::Separator();
-			ImGui::Text("Tick this checkbox if you want to freeze game with a button, this might cause\nissues with pause menus and stuff so enable only when needed!");
-			ImGui::Checkbox("Hook Freeze World", &bHookDispatch);
+			ImGui::TextWrapped("Tick this checkbox if you want to freeze game with a button, this might cause issues with pause menus and stuff so enable only when needed!");
+			ImGui::Checkbox("Hook Freeze World", &m_bHookDispatch);
 
-			if (bHookDispatch)
+			if (m_bHookDispatch)
 			{
-				ImGui::Checkbox("Freeze World", &bFreezeWorld);
+				ImGui::Checkbox("Freeze World", &m_bFreezeWorld);
 				ImGui::SameLine();
 				ShowHelpMarker("Hotkey - F2");
 			}
@@ -519,67 +521,108 @@ void MK10Menu::Draw()
 		}
 		if (ImGui::BeginTabItem("Camera Control"))
 		{
-			ImGui::Checkbox("Custom Camera Position", &bCustomCamera);
+			ImGui::Checkbox("Set Camera Position", &m_bCustomCameraPos);
 			ImGui::InputFloat3("X | Y | Z", &camPos.X);
-			ImGui::Checkbox("Custom Camera Rotation", &bCustomCameraRot);
+			ImGui::Checkbox("Set Camera Rotation", &m_bCustomCameraRot);
 			ImGui::InputInt3("Pitch | Yaw | Roll", &camRot.Pitch);
-			ImGui::Checkbox("Custom FOV", &bCustomFOV);
+
+			ImGui::Checkbox("Set FOV", &m_bCustomCameraFOV);
 			ImGui::InputFloat("FOV", &camFov);
-	
-
-			ImGui::Checkbox("Enable Freecam", &bFreeCameraMovement);
-			ImGui::SameLine(); ShowHelpMarker("Requires both toggles enabled!\nYou can configure keys in .ini file.");
-			ImGui::InputFloat("Freecam Speed", &fFreeCameraSpeed);
-			ImGui::InputInt("Freecam Rotation Speed", &iFreeCameraRotSpeed);
 
 			ImGui::Separator();
-			ImGui::Text("Check this option if the game you can't move camera anymore after fatalities or win poses.");
-			ImGui::Checkbox("Force Camera To Move", &bForceMoveCamera);
+			ImGui::Checkbox("Enable Freecam", &m_bFreeCam);
+			ImGui::SameLine(); ShowHelpMarker("Allows to move camera with certain keys.\nRequires all toggles enabled!\nYou can configure keys in .ini file.");
 
-			ImGui::Separator();
-
-			ImGui::Checkbox("Custom Cameras", &bEnableCustomCameras);
-
-			if (ImGui::BeginCombo("Mode", szCurrentCameraOption))
+			if (m_bFreeCam)
 			{
-				for (int n = 0; n < IM_ARRAYSIZE(szCameraModes); n++)
-				{
-					bool is_selected = (szCurrentCameraOption == szCameraModes[n]);
-					if (ImGui::Selectable(szCameraModes[n], is_selected))
-						sprintf(szCurrentCameraOption, szCameraModes[n]);
-					if (is_selected)
-						ImGui::SetItemDefaultFocus();
+				if (!m_bCustomCameraPos || !m_bCustomCameraRot || !m_bCustomCameraFOV)
+					ImGui::TextColored(ImVec4(1.f, 0.3f, 0.3f, 1.f), "Check rest of the Set Camera options!");
 
-				}
-				ImGui::EndCombo();
+				ImGui::InputFloat("Freecam Speed", &m_fFreeCameraSpeed);
+				ImGui::InputInt("Freecam Rotation Speed", &m_nFreeCameraRotationSpeed);
 			}
-			iCurrentCustomCamera = GetCamMode(szCurrentCameraOption);
-			ImGui::InputFloat("FPS Camera Offset", &fAdjustCam);
 
+
+
+
+			ImGui::Separator();
+			ImGui::Checkbox("Force Camera To Move", &m_bForceCameraUpdate);
+			ImGui::SameLine(); ShowHelpMarker("Check this option if you can't move camera anymore in win poses and some cinematics.");
+
+
+			ImGui::Separator();
+			if (GetObj(PLAYER1) && GetObj(PLAYER2))
+			{
+				ImGui::Checkbox("Custom Cameras", &m_bCustomCameras);
+
+				if (ImGui::BeginCombo("Mode", szCurrentCameraOption))
+				{
+					for (int n = 0; n < IM_ARRAYSIZE(szCameraModes); n++)
+					{
+						bool is_selected = (szCurrentCameraOption == szCameraModes[n]);
+						if (ImGui::Selectable(szCameraModes[n], is_selected))
+							sprintf(szCurrentCameraOption, szCameraModes[n]);
+						if (is_selected)
+							ImGui::SetItemDefaultFocus();
+
+					}
+					ImGui::EndCombo();
+				}
+				m_nCurrentCustomCamera = GetCamMode(szCurrentCameraOption);
+				ImGui::InputFloat("FPS Camera Offset", &m_fAdjustCam);
+			}
+			else
+				ImGui::Text("Custom cameras will appear once in-game!");
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem("Cheats"))
 		{
-			ImGui::Text("Player 1");
 			ImGui::Separator();
-			ImGui::Checkbox("Infinite Health", &bInfiniteHealthPlayer1);
-			ImGui::Checkbox("Infinite Super Meter", &bInfiniteSuperBarPlayer1);
-			ImGui::Checkbox("Zero Health", &b0HealthPlayer1);
-			ImGui::Checkbox("1 Health", &b1HealthPlayer1);
-			ImGui::Separator();
+			ImGui::Columns(2);
+			ImGui::SetColumnWidth(0, 11.5f * ImGui::GetFontSize());
 
-			ImGui::Text("Player 2");
-			ImGui::Separator();
-			ImGui::Checkbox("Infinite Health ", &bInfiniteHealthPlayer2);
-			ImGui::Checkbox("Infinite Super Meter ", &bInfiniteSuperBarPlayer2);
-			ImGui::Checkbox("Zero Health ", &b0HealthPlayer2);
-			ImGui::Checkbox("1 Health ", &b1HealthPlayer2);
-			ImGui::Separator();
-			ImGui::Checkbox("Infinite Timer", &bStopTimer);
+			ImGui::Text("Infinite Health");
+			ImGui::NextColumn();
+			ImGui::Checkbox("P1##infhealth", &m_bInfiniteHealthP1);
+			ImGui::SameLine();
+			ImGui::Checkbox("P2##infhealth", &m_bInfiniteHealthP2);
+			ImGui::NextColumn();
+
+
+			ImGui::Text("Zero Health\n");
+			ImGui::NextColumn();
+			ImGui::Checkbox("P1##0health", &m_bNoHealthP1);
+			ImGui::SameLine();
+			ImGui::Checkbox("P2##0health", &m_bNoHealthP2);
+			ImGui::NextColumn();
+
+
+
+			ImGui::Text("Infinite Meter\n");
+			ImGui::NextColumn();
+			ImGui::Checkbox("P1##super", &m_bInfiniteMeterP1);
+			ImGui::SameLine();
+			ImGui::Checkbox("P2##super", &m_bInfiniteMeterP2);
+			ImGui::NextColumn();
+
+			ImGui::Text("Freeze Timer\n");
+			ImGui::NextColumn();
+			ImGui::Checkbox("Enable##time", &m_bStopTimer);
+			ImGui::NextColumn();
+
+			ImGui::Columns(1);
+
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem("Misc."))
 		{
+			if (ImGui::Button("Hide FightHUD"))
+				HideHUD();
+			ImGui::SameLine();
+			if (ImGui::Button("Show FightHUD"))
+				ShowHUD();
+			ImGui::Checkbox("Hide FightHUD In Game", &m_bAutoHideHUD);
+
 			bool swap = ImGui::Button("Swap Player Positions");
 			ImGui::SameLine(); ShowHelpMarker("Shortcut - CTRL+F2");
 			if (swap)
@@ -600,60 +643,127 @@ void MK10Menu::Draw()
 
 			}
 
-
 			ImGui::Separator();
 			ImGui::Checkbox("Disable Combo Damage Scaling", &SettingsMgr->bDisableComboDamageScaling);
-
+			ImGui::SameLine(); ShowHelpMarker("Enable this feature in the .ini first to make it toggleable while in game.");
+			ImGui::EndTabItem();
 		}
-	}
 
+	}
 	ImGui::End();
+
+	if (m_bSubmenuActive[SUBMENU_SETTINGS])
+		DrawSettings();
 }
 
 void MK10Menu::UpdateControls()
 {
-	if (GetAsyncKeyState(VK_F5))
-	{
-		if (GetTickCount64() - timer <= 150) return;
-		timer = GetTickCount64();
-		bSlowMotionEnabled ^= 1;
-	}
-
-	if (GetAsyncKeyState(VK_F2))
-	{
-		if (bHookDispatch)
-		{
-			if (GetTickCount64() - timer <= 150) return;
-			timer = GetTickCount64();
-			bFreezeWorld ^= 1;
-		}
-
-	}
-	if (bSlowMotionEnabled)
+	if (m_bSlowMotion)
 	{
 		if (GetAsyncKeyState(VK_F6))
 		{
 			if (GetTickCount64() - timer <= 150) return;
 			timer = GetTickCount64();
-			fSlowMotionSpeed += 0.1f;
+			m_fSlowMotionSpeed += 0.1f;
 		}
 		if (GetAsyncKeyState(VK_F7))
 		{
 			if (GetTickCount64() - timer <= 150) return;
 			timer = GetTickCount64();
-			fSlowMotionSpeed -= 0.1f;
+			m_fSlowMotionSpeed -= 0.1f;
 		}
 	}
 }
 
+void MK10Menu::DrawSettings()
+{
+	ImGui::SetNextWindowPos({ ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y / 2.0f }, ImGuiCond_Once, { 0.5f, 0.5f });
+	ImGui::SetNextWindowSize({ 54 * ImGui::GetFontSize(), 54 * ImGui::GetFontSize() }, ImGuiCond_Once);
+	ImGui::Begin("Settings", &m_bSubmenuActive[SUBMENU_SETTINGS]);
+
+	static int settingID = 0;
+	static const char* settingNames[] = {
+		"Menu",
+		"INI"
+	};
+
+	enum eSettings {
+		MENU,
+		INI,
+	};
+
+	ImGui::BeginChild("##settings", { 12 * ImGui::GetFontSize(), 0 }, true);
+
+	for (int n = 0; n < IM_ARRAYSIZE(settingNames); n++)
+	{
+		bool is_selected = (settingID == n);
+		if (ImGui::Selectable(settingNames[n], is_selected))
+			settingID = n;
+		if (is_selected)
+			ImGui::SetItemDefaultFocus();
+	}
+
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+	ImGui::BeginChild("##content", { 0, -ImGui::GetFrameHeightWithSpacing() });
+
+	switch (settingID)
+	{
+	case MENU:
+		ImGui::TextWrapped("All user settings are saved to mkxhook_user.ini.");
+		ImGui::Text("Menu Scale");
+		ImGui::InputFloat("", &SettingsMgr->fMenuScale);
+		break;
+	case INI:
+		ImGui::TextWrapped("These settings control MKXHook.ini options. Any changes require game restart to take effect.");
+		ImGui::LabelText("", "Core");
+		ImGui::Separator();
+		ImGui::Checkbox("Debug Console", &SettingsMgr->bEnableConsoleWindow);
+		ImGui::Checkbox("Gamepad Support", &SettingsMgr->bEnableGamepadSupport);
+		ImGui::Checkbox("60 FPS Patch", &SettingsMgr->bEnable60FPSFrontend);
+
+		ImGui::LabelText("", "Features");
+		ImGui::Separator();
+		ImGui::Checkbox("Disable Sweat Effects", &SettingsMgr->bDisableSweatEffects);
+		ImGui::SameLine(); ShowHelpMarker("Disables sweat generation on fighters.");
+		ImGui::Checkbox("Enable NPC Fatalities", &SettingsMgr->bEnableNPCFatalities);
+		ImGui::SameLine(); ShowHelpMarker("Allows to perform fatalities on NPCs");
+		ImGui::Checkbox("Enable NPC Victory Poses", &SettingsMgr->bEnableNPCVictoryPoses);
+		ImGui::SameLine(); ShowHelpMarker("(currently) Assigns Kung Lao's victory animation to Rain.");
+		ImGui::Checkbox("Fix NPC Gender Messages", &SettingsMgr->bFixNPCGenderFatalityMessage);
+		ImGui::SameLine(); ShowHelpMarker("Rain, Baraka and Corrupted Shinnok will correctly use 'Finish Him'.");
+		ImGui::Checkbox("Disable Asset Checking", &SettingsMgr->bDisableAssetHashChecking);
+		ImGui::SameLine(); ShowHelpMarker("Allows to freely replace files without the need of updating toc data.");
+		ImGui::Checkbox("Disable Combo Scaling", &SettingsMgr->bDisableComboDamageScaling);
+		ImGui::SameLine(); ShowHelpMarker("Removes combo scaling.");
+
+		break;
+	default:
+		break;
+	}
+
+	if (ImGui::Button("Save", { -FLT_MIN, 0 }))
+	{
+		Notifications->SetNotificationTime(2500);
+		Notifications->PushNotification("Settings saved to MKXHook.ini and mkxhook_user.ini!");
+		eDirectX11Hook::ms_bShouldReloadFonts = true;
+		SettingsMgr->SaveSettings();
+	}
+
+	ImGui::EndChild();
+
+	ImGui::End();
+}
+
 bool MK10Menu::GetActiveState()
 {
-	return bIsActive;
+	return m_bIsActive;
 }
 
 char * GetMKXHookVersion()
 {
-	char buffer[512];
+	static char buffer[512] = {};
 	sprintf(buffer, "MKXHook by ermaccer (%s)", MKXHOOK_VERSION);
 	return buffer;
 }

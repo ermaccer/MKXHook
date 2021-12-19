@@ -9,6 +9,7 @@
 #include "code/mk10menu.h"
 #include "code/eNotifManager.h"
 #include "code/MKCamera.h"
+#include "code/eGamepadManager.h"
 
 #include <iostream>
 
@@ -40,17 +41,17 @@ bool __fastcall SetFlagNull()
 
 bool ValidateGameVersion()
 {
-	const char* gameName = MK10::GetGameName();
+	const char* gameName = GetGameName();
 
 	if (strcmp(gameName, "MK10") == 0)
 		return true;
 	else
 	{
-		MessageBoxA(0, "Invalid game version!\nMKXHook only supports latest (or it needs to be updated) Steam executable.", 0, MB_ICONINFORMATION);
+		MessageBoxA(0, "Invalid game version!\nMKXHook only supports latest Steam executable.\n\n"
+			"If you still cannot run the plugin and made sure that the game is updated, MKXHook needs to be updated.", 0, MB_ICONINFORMATION);
 		return false;
 	}
 }
-
 
 
 void OnInitializeHook()
@@ -69,7 +70,7 @@ void OnInitializeHook()
 		printf("NOTE: With disabled hash checking you won't be able to play online\n nor use Faction Wars (private rooms still work though)\n");
 
 	printf("MKXHook::OnInitializeHook() | Begin!\n");
-	printf("MKXHook::OnInitializeHook() | Game detected: %s\n", MK10::GetGameName());
+	printf("MKXHook::OnInitializeHook() | Game detected: %s\n", GetGameName());
 	TheMenu->Initialize();
 	Notifications->Init();
 	Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
@@ -78,15 +79,12 @@ void OnInitializeHook()
 
 
 	if (SettingsMgr->bEnable60FPSFrontend)
-	{
-		InjectHook(_addr(0x14002B250), tramp->Jump(SetFlagNull),PATCH_JUMP);
-
-	}
+		InjectHook(_addr(0x14002B250), tramp->Jump(SetFlagNull), PATCH_JUMP);
 
 
 	if (SettingsMgr->bDisableAssetHashChecking)
 		InjectHook(_addr(0x14002BF69), tramp->Jump(GenericFalseReturn));
-	
+
 	if (SettingsMgr->bEnableNPCFatalities)
 	{
 		InjectHook(_addr(0x140058F03), tramp->Jump(MK10Hooks::HookCheckFatalityStatus));
@@ -134,13 +132,16 @@ void OnInitializeHook()
 	InjectHook(_addr(0x140029E7F), tramp->Jump(MK10Hooks::HookDispatch));
 
 	if (SettingsMgr->bEnableNPCVictoryPoses)
-	{
 		InjectHook(_addr(0x1405543B6), tramp->Jump(MK10Hooks::HookGetCharacterVictory));
-	}
+
+	//gamepad
+	if (SettingsMgr->bEnableGamepadSupport)
+		InjectHook(_addr(0x14216922E), tramp->Jump(XInputGetState_Hook), PATCH_JUMP);
+}
 
 
 
-}BOOL WINAPI DllMain(HMODULE hMod, DWORD dwReason, LPVOID lpReserved)
+BOOL WINAPI DllMain(HMODULE hMod, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason)
 	{
@@ -148,11 +149,17 @@ void OnInitializeHook()
 
 		if (ValidateGameVersion())
 		{
-			eDirectX11Hook::Init();
+#ifdef _60_ONLY
+			Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
+			InjectHook(_addr(0x14002B250), tramp->Jump(SetFlagNull), PATCH_JUMP);
+#else
 			SettingsMgr->Init();
+			OnInitializeHook();
+			eDirectX11Hook::Init();
 			DisableThreadLibraryCalls(hMod);
 			CreateThread(nullptr, 0, DirectXHookThread, hMod, 0, nullptr);
-			OnInitializeHook();
+
+#endif	
 		}
 
 		break;

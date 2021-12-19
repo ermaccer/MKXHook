@@ -16,6 +16,7 @@ public:
 	bool bDisableSweatEffects;
 	bool bEnableNPCVictoryPoses;
 
+	bool bEnableGamepadSupport;
 
 	int iHookMenuOpenKey;
 	// free camera keys
@@ -38,7 +39,9 @@ public:
 
 
 
+	float fMenuScale;
 
+	void SaveSettings();
 };
 
 extern eSettingsManager* SettingsMgr;

@@ -2,15 +2,6 @@
 #include <vector>
 #include <string>
 
-enum eTabs {
-	TAB_CHARACTER_MODIFIER,
-	TAB_STAGE_MODIFIER,
-	TAB_CAMERA,
-	TAB_PLAYER_CONTROL,
-	TAB_MISC,
-	TAB_CHEATS
-};
-
 enum eCustomCameras {
 	CAMERA_3RDPERSON,
 	CAMERA_3RDPERSON2,
@@ -19,100 +10,87 @@ enum eCustomCameras {
 	TOTAL_CUSTOM_CAMERAS
 };
 
+enum eMenuSubMenus {
+	SUBMENU_SETTINGS,
+	TOTAL_SUBMENUS
+};
+
 
 // as usual, based on mh2 debug menu
 
 class MK10Menu {
-private:
-	int  iCurrentTab;
 public:
-	bool bIsActive;
-
-	bool	 bSlowMotionEnabled;
-	float	 fSlowMotionSpeed;
-
-	bool bFocused;
-	// characters
-	bool bPlayer1ModifierEnabled;
-	bool bPlayer1TraitEnabled;
-	int  iPlayer1Trait;
-	bool bPlayer2ModifierEnabled;
-	bool bPlayer2TraitEnabled;
-	int  iPlayer2Trait;
-
-	char szPlayer1ModifierCharacter[128] = {};
-	char szPlayer2ModifierCharacter[128] = {};
-
-	char szPlayer1Trait[128] = {};
-	char szPlayer2Trait[128] = {};
-
-	bool bCustomTraitsP1;
-	bool bCustomTraitsP2;
-
-	bool bCustomTraitAppendP1;
-	bool bCustomTraitAppendP2;
-
-	bool bChangePlayerSpeed;
-	float fPlayer1Speed;
-	float fPlayer2Speed;
-
-
+	bool	 m_bIsActive;
+	bool	 m_bSubmenuActive[TOTAL_SUBMENUS] = {};
+	bool	 m_bSlowMotion;
+	bool     m_bFreezeWorld;
+	bool	 m_bIsFocused;
+	bool	 m_bHookDispatch;
+	bool	 m_bForceCameraUpdate;
+	bool	 m_bCustomCameraPos;
+	bool	 m_bCustomCameraRot;
+	bool	 m_bCustomCameraFOV;
+	bool	 m_bFreeCam;
+	bool	 m_bCustomCameras;
+	bool	 m_bYObtained;
+	bool	 m_bStageModifier;
+	bool	 m_bAutoHideHUD;
 	// cheats
-	bool bStopTimer;
-	bool bInfiniteHealthPlayer1;
-	bool bInfiniteSuperBarPlayer1;
-	bool b0HealthPlayer1;
-	bool b1HealthPlayer1;
+	bool m_bStopTimer;
+	bool m_bInfiniteHealthP1;
+	bool m_bInfiniteHealthP2;
+	bool m_bInfiniteMeterP1;
+	bool m_bInfiniteMeterP2;
+	bool m_bNoHealthP1;
+	bool m_bNoHealthP2;
+	bool m_bOneHealthP1;
+	bool m_bOneHealthP2;
 
-	bool bInfiniteHealthPlayer2;
-	bool bInfiniteSuperBarPlayer2;
-	bool b0HealthPlayer2;
-	bool b1HealthPlayer2;
 
+	bool	m_bChangePlayerSpeed;
+	bool	m_bChangePlayerScale;
+	bool	m_bPlayer1Modifier;
+	bool	m_bPlayer2Modifier;
+	bool	m_bPlayer1CustomTrait;
+	bool	m_bPlayer2CustomTrait;
+
+	float	 m_fSlowMotionSpeed;
+	float	 m_fP1Speed;
+	float	 m_fP2Speed;
+	float	 m_fAdjustCam;
+	float	 m_fFreeCameraSpeed;
+
+	int  m_nFreeCameraRotationSpeed;
+	int  m_nCurrentCustomCamera;
+	int  m_nCurrentCharModifier;
+
+
+	FVector	 m_vP1Scale;
+	FVector	 m_vP2Scale;
 
 	// camera
-	bool bCustomCamera;
-	bool bCustomFOV;
-	bool bCustomCameraRot;
 	FVector camPos;
 	FRotator camRot;
 	float camFov;
 
-
-	bool bFreeCameraMovement;
-	float fFreeCameraSpeed;
-	int  iFreeCameraRotSpeed;
-	bool bEnableCustomCameras;
-	int  iCurrentCustomCamera;
-	char szCurrentCameraOption[128];
-	bool bYObtained;
-
-	float fAdjustCam;
-
-	// player 
-	bool bFreezePosition;
 	FVector plrPos;
 	FVector plrPos2;
 
-
-	bool bChangePlayerScale;
-	FVector fPlayer1Scale;
-	FVector fPlayer2Scale;
-
-	// stage
-	bool bStageModifier;
 	char szStageModifierStage[128] = {};
-
-	
-	bool bEnableRandomFights;
-	bool bFreezeWorld;
-	bool bHookDispatch;
-	bool bForceMoveCamera;
+	char szPlayer1ModifierCharacter[128] = {};
+	char szPlayer2ModifierCharacter[128] = {};
+	char szCurrentCameraOption[128] = {};
+	char szPlayer1Trait[128] = {};
+	char szPlayer2Trait[128] = {};
 
 	void Initialize();
 	void Process();
 	void Draw();
 	void UpdateControls();
+
+
+	void DrawSettings();
+
 	bool GetActiveState();
 };
 

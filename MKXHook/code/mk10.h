@@ -5,7 +5,7 @@
 #define GFG_GAME_INFO 0x1430DBA00
 
 
-#define MKXHOOK_VERSION "0.5.6"
+#define MKXHOOK_VERSION "0.5.7"
 
 enum  PLAYER_NUM
 {
@@ -21,25 +21,24 @@ enum  PLAYER_NUM
 };
 
 
-namespace MK10 {
-	const char* GetGameName();
-	void SetCharacter(PLAYER_NUM plr, const char* character);
-	void SetTrait(PLAYER_NUM plr, const char* name);
-	void ClearTraits(PLAYER_NUM plr);
-	void SetStage(const char* stage);
-	void SlowGameTimeForXTicks(float speed, int ticks);
-	void ResetStageInteractables();
+const char* GetGameName();
+void SetCharacter(PLAYER_NUM plr, const char* character);
+void SetTrait(PLAYER_NUM plr, const char* name);
+void ClearTraits(PLAYER_NUM plr);
+void SetStage(const char* stage);
+void SlowGameTimeForXTicks(float speed, int ticks);
+void ResetStageInteractables();
 
-	MKCharacter* GetCharacterObject(PLAYER_NUM plr);
-	int64 GetCharacterInfo(PLAYER_NUM plr);
-
+MKCharacter* GetObj(PLAYER_NUM plr);
+int64 GetInfo(PLAYER_NUM plr);
 
 
-	void  GetCharacterPosition(FVector* vec, PLAYER_NUM plr);
-	void  SetCharacterPosition(FVector* vec, PLAYER_NUM plr);
-	void  SetCharacterMeter(int64 obj, float meter);
 
-}
+void  GetCharacterPosition(FVector* vec, PLAYER_NUM plr);
+void  SetCharacterMeter(int64 obj, float meter);
+
+void HideHUD();
+void ShowHUD();
 
 
 namespace MK10Hooks {

@@ -123,6 +123,12 @@
     <ClInclude Include="code\eNotifManager.h">
       <Filter>Header Files\code</Filter>
     </ClInclude>
+    <ClInclude Include="font.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="code\eGamepadManager.h">
+      <Filter>Header Files\code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -196,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="imgui\imgui_tables.cpp">
       <Filter>Header Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="code\eGamepadManager.cpp">
+      <Filter>Header Files\code</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

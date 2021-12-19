@@ -22,7 +22,6 @@ void MKCharacter::SetMeter(float value)
 	((void(__fastcall*)(MKCharacter*, float))_addr(0x14055EC40))(this, value);
 }
 
-
 bool MKCharacter::IsCrouching()
 {
 	return ((bool(__fastcall*)(MKCharacter*))_addr(0x1401BBDB0))(this);
