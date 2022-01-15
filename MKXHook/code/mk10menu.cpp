@@ -195,12 +195,36 @@ const char* szStageNames[]{
 
 };
 
+const char* szBones[] = {
+	"Head",
+	"Hips",
+	"Jaw",
+	"LeftArm",
+	"LeftEye",
+	"LeftFoot",
+	"LeftForeArm",
+	"LeftHand",
+	"LeftLeg",
+	"Neck",
+	"Neck1",
+	"Reference",
+	"RightArm",
+	"RightEye",
+	"RightFoot",
+	"RightHand",
+	"RightLeg",
+	"Spine",
+	"Spine1",
+	"Spine2",
+	"Spine3",
+};
 
 const char* szCameraModes[TOTAL_CUSTOM_CAMERAS] = {
 	"Third Person",
 	"Third Person #2",
 	"First Person",
-	"First Person Mid"
+	"First Person Mid",
+	"Head Perspective"
 };
 
 int GetCamMode(const char* mode)
@@ -283,6 +307,16 @@ void MK10Menu::Initialize()
 	sprintf(szStageModifierStage, szStageNames[0]);
 	sprintf(szPlayer1Trait, szTraits[0]);
 	sprintf(szPlayer2Trait, szTraits[0]);
+	sprintf(szPlayer1Bone, szBones[0]);
+	sprintf(szPlayer2Bone, szBones[0]);
+
+	m_bDontFlipCamera = false;
+	m_bDisableHeadTracking = false;
+	m_bUsePlayerTwoAsTracker = false;
+
+	m_fAdjustCustomHeadCameraX = 0.0f;
+	m_fAdjustCustomHeadCameraY = 800.0f;
+	m_fAdjustCustomHeadCameraZ = 0.0f;
 
 }
 
@@ -551,9 +585,9 @@ void MK10Menu::Draw()
 
 
 			ImGui::Separator();
+			ImGui::Checkbox("Custom Cameras", &m_bCustomCameras);
 			if (GetObj(PLAYER1) && GetObj(PLAYER2))
 			{
-				ImGui::Checkbox("Custom Cameras", &m_bCustomCameras);
 
 				if (ImGui::BeginCombo("Mode", szCurrentCameraOption))
 				{
@@ -569,7 +603,26 @@ void MK10Menu::Draw()
 					ImGui::EndCombo();
 				}
 				m_nCurrentCustomCamera = GetCamMode(szCurrentCameraOption);
-				ImGui::InputFloat("FPS Camera Offset", &m_fAdjustCam);
+
+				m_nCurrentCustomCamera = GetCamMode(szCurrentCameraOption);
+				if (m_nCurrentCustomCamera == CAMERA_1STPERSON || m_nCurrentCustomCamera == CAMERA_1STPERSON_MID)
+				{
+					ImGui::InputFloat("FPS Camera Offset", &m_fAdjustCam);
+				}
+				else if (m_nCurrentCustomCamera == CAMERA_HEAD_TRACKING)
+				{
+					ImGui::InputFloat("Up/Down Angle Offset", &m_fAdjustCustomHeadCameraY);
+					ImGui::InputFloat("Up/Down Offset", &m_fAdjustCustomHeadCameraZ);
+					ImGui::InputFloat("Left/Right Offset", &m_fAdjustCustomHeadCameraX);
+
+					ImGui::Checkbox("Don't Flip Camera", &m_bDontFlipCamera);
+					ImGui::SameLine(); ShowHelpMarker("Use this option for head tracked cinematics.");
+					ImGui::Checkbox("Use Player Two As Source", &m_bUsePlayerTwoAsTracker);
+
+					ImGui::TextWrapped("Toggle 'Disable Head Tracking' in Misc. section first to use this mode properly. Toggle it at select screen.");
+					ImGui::TextWrapped("Recommended to set FOV value to at least 110 to make this mode look right!");
+					ImGui::TextColored(ImVec4(1.f, 0.3f, 0.3f, 1.f), "Disable this mode before restarting or leaving match!");
+				}
 			}
 			else
 				ImGui::Text("Custom cameras will appear once in-game!");
@@ -596,6 +649,12 @@ void MK10Menu::Draw()
 			ImGui::Checkbox("P2##0health", &m_bNoHealthP2);
 			ImGui::NextColumn();
 
+			ImGui::Text("One Health\n");
+			ImGui::NextColumn();
+			ImGui::Checkbox("P1##1health", &m_bNoHealthP1);
+			ImGui::SameLine();
+			ImGui::Checkbox("P2##1health", &m_bNoHealthP2);
+			ImGui::NextColumn();
 
 
 			ImGui::Text("Infinite Meter\n");
@@ -624,7 +683,6 @@ void MK10Menu::Draw()
 			ImGui::Checkbox("Hide FightHUD In Game", &m_bAutoHideHUD);
 
 			bool swap = ImGui::Button("Swap Player Positions");
-			ImGui::SameLine(); ShowHelpMarker("Shortcut - CTRL+F2");
 			if (swap)
 				((void(__fastcall*)())_addr(0x14055FE90))();
 
@@ -646,6 +704,9 @@ void MK10Menu::Draw()
 			ImGui::Separator();
 			ImGui::Checkbox("Disable Combo Damage Scaling", &SettingsMgr->bDisableComboDamageScaling);
 			ImGui::SameLine(); ShowHelpMarker("Enable this feature in the .ini first to make it toggleable while in game.");
+			ImGui::Checkbox("Disable Head Tracking", &m_bDisableHeadTracking);
+			ImGui::SameLine();
+			ShowHelpMarker("NOTE: Enable this in select screen! Disables P1 head looking at P2. Automatically enabled with 'Head Perspective' custom camera.");
 			ImGui::EndTabItem();
 		}
 

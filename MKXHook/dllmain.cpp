@@ -77,7 +77,6 @@ void OnInitializeHook()
 	InjectHook(_addr(0x1404A172D), tramp->Jump(MK10Hooks::HookProcessStuff));
 	InjectHook(_addr(0x14049D139), tramp->Jump(MK10Hooks::HookStartupFightRecording));
 
-
 	if (SettingsMgr->bEnable60FPSFrontend)
 		InjectHook(_addr(0x14002B250), tramp->Jump(SetFlagNull), PATCH_JUMP);
 

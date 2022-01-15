@@ -129,7 +129,6 @@ void __fastcall MK10Hooks::HookProcessStuff()
 	if (TheMenu->m_bSlowMotion)
 		SlowGameTimeForXTicks(TheMenu->m_fSlowMotionSpeed, 10);
 
-
 	if (TheMenu->m_bChangePlayerScale)
 	{
 		if (GetObj(PLAYER1))
@@ -158,8 +157,20 @@ void __fastcall MK10Hooks::HookProcessStuff()
 		if (TheMenu->m_bInfiniteMeterP1)
 			SetCharacterMeter(GetInfo(PLAYER1), 1.0f);
 
+		if (TheMenu->m_bDisableHeadTracking)
+		{
+			GetObj(PLAYER1)->KillHeadTracking();
+		}
+
+
 		if (TheMenu->m_bAutoHideHUD)
 			HideHUD();
+
+		if (TheMenu->m_nCurrentCustomCamera == CAMERA_HEAD_TRACKING && TheMenu->m_bCustomCameras)
+		{
+			TheMenu->m_bDisableHeadTracking = true;
+		}
+
 	}
 	if (GetObj(PLAYER2))
 	{
@@ -238,6 +249,8 @@ void __fastcall MK10Hooks::HookStartupFightRecording()
 	TheMenu->m_bCustomCameraPos = false;
 	TheMenu->m_bCustomCameraRot = false;
 	TheMenu->m_bYObtained = false;
+	TheMenu->m_bCustomCameras = false;
+
 	// recording call
 	((void(__fastcall*)())_addr(0x1403924C0))();
 

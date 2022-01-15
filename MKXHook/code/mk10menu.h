@@ -7,6 +7,7 @@ enum eCustomCameras {
 	CAMERA_3RDPERSON2,
 	CAMERA_1STPERSON,
 	CAMERA_1STPERSON_MID,
+	CAMERA_HEAD_TRACKING,
 	TOTAL_CUSTOM_CAMERAS
 };
 
@@ -35,6 +36,10 @@ public:
 	bool	 m_bYObtained;
 	bool	 m_bStageModifier;
 	bool	 m_bAutoHideHUD;
+	bool	 m_bDontFlipCamera;
+	bool	 m_bDisableHeadTracking;
+	bool	 m_bUsePlayerTwoAsTracker;
+
 	// cheats
 	bool m_bStopTimer;
 	bool m_bInfiniteHealthP1;
@@ -59,6 +64,9 @@ public:
 	float	 m_fP2Speed;
 	float	 m_fAdjustCam;
 	float	 m_fFreeCameraSpeed;
+	float	 m_fAdjustCustomHeadCameraX;
+	float	 m_fAdjustCustomHeadCameraY;
+	float	 m_fAdjustCustomHeadCameraZ;
 
 	int  m_nFreeCameraRotationSpeed;
 	int  m_nCurrentCustomCamera;
@@ -82,6 +90,8 @@ public:
 	char szCurrentCameraOption[128] = {};
 	char szPlayer1Trait[128] = {};
 	char szPlayer2Trait[128] = {};
+	char szPlayer1Bone[128] = {};
+	char szPlayer2Bone[128] = {};
 
 	void Initialize();
 	void Process();

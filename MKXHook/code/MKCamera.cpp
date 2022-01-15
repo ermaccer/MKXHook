@@ -1,6 +1,7 @@
 #include "mkcamera.h"
 #include "mk10menu.h"
 #include <iostream>
+#include "MKCharacter.h"
 MKCamera* TheCamera;
 
 void MKCamera::SetPosition(FVector * pos)
@@ -45,14 +46,19 @@ void MKCamera::HookedSetPosition(FVector * pos)
 		oneTime = pos->Y;
 		TheMenu->m_bYObtained = true;
 	}
+
 	if (TheMenu->m_bCustomCameras)
 	{
 		if (GetObj(PLAYER1) && GetObj(PLAYER2))
 		{
 			FVector plrPos;
 			FVector p2;
-			GetCharacterPosition(&plrPos, PLAYER1);
-			GetCharacterPosition(&p2, PLAYER2);
+			FVector eyePos[2];
+			FVector middle;
+			if (GetObj(PLAYER1))
+				GetCharacterPosition(&plrPos, PLAYER1);
+			if (GetObj(PLAYER2))
+				GetCharacterPosition(&p2, PLAYER2);
 			switch (TheMenu->m_nCurrentCustomCamera)
 			{
 			case CAMERA_3RDPERSON:
@@ -112,6 +118,35 @@ void MKCamera::HookedSetPosition(FVector * pos)
 
 				TheMenu->camPos = *pos;
 				break;
+			case CAMERA_HEAD_TRACKING:
+				if (TheMenu->m_bUsePlayerTwoAsTracker)
+				{
+					if (GetObj(PLAYER2))
+					{
+						GetObj(PLAYER2)->GetBonePos("LeftEye", &eyePos[0]);
+						GetObj(PLAYER2)->GetBonePos("RightEye", &eyePos[1]);
+					}
+				}
+
+				else
+				{
+					if (GetObj(PLAYER1))
+					{
+						GetObj(PLAYER1)->GetBonePos("LeftEye", &eyePos[0]);
+						GetObj(PLAYER1)->GetBonePos("RightEye", &eyePos[1]);
+					}
+				}
+
+				middle = (eyePos[0] + eyePos[1]) / 2.0;
+				
+
+				pos->X = middle.X + TheMenu->m_fAdjustCustomHeadCameraX;
+				pos->Y = middle.Y;
+				pos->Z = middle.Z + TheMenu->m_fAdjustCustomHeadCameraZ;
+
+
+				TheMenu->camPos = *pos;
+				break;
 			}
 		}
 		SetPosition(pos);
@@ -131,11 +166,18 @@ void MKCamera::HookedSetPosition(FVector * pos)
 
 void MKCamera::HookedSetRotation(FRotator * rot)
 {
+
 	if (TheMenu->m_bCustomCameras)
 	{
 		if (GetObj(PLAYER1) && GetObj(PLAYER2))
 		{
 			FVector p1, p2;
+			FRotator headRot;
+			if (GetObj(PLAYER1))
+				GetCharacterPosition(&p1,PLAYER1);
+			if (GetObj(PLAYER2))
+				GetCharacterPosition(&p2, PLAYER2);
+
 			switch (TheMenu->m_nCurrentCustomCamera)
 			{
 			case CAMERA_3RDPERSON:
@@ -143,8 +185,6 @@ void MKCamera::HookedSetRotation(FRotator * rot)
 				rot->Yaw = 16000;
 				rot->Roll = 0;
 				TheMenu->camRot = *rot;
-				GetCharacterPosition(&p1, PLAYER1);
-				GetCharacterPosition(&p2, PLAYER2);
 
 				if (p2.Y < p1.Y)
 				{
@@ -159,8 +199,6 @@ void MKCamera::HookedSetRotation(FRotator * rot)
 				rot->Yaw = 16000;
 				rot->Roll = 0;
 				TheMenu->camRot = *rot;
-				GetCharacterPosition(&p1, PLAYER1);
-				GetCharacterPosition(&p2, PLAYER2);
 
 				if (p2.Y < p1.Y)
 				{
@@ -175,8 +213,6 @@ void MKCamera::HookedSetRotation(FRotator * rot)
 				rot->Yaw = 16000;
 				rot->Roll = 0;
 				TheMenu->camRot = *rot;
-				GetCharacterPosition(&p1, PLAYER1);
-				GetCharacterPosition(&p2, PLAYER2);
 
 				if (p2.Y < p1.Y)
 				{
@@ -190,14 +226,50 @@ void MKCamera::HookedSetRotation(FRotator * rot)
 				rot->Yaw = 16000;
 				rot->Roll = 0;
 				TheMenu->camRot = *rot;
-				GetCharacterPosition(&p1, PLAYER1);
-				GetCharacterPosition(&p2, PLAYER2);
 
 				if (p2.Y < p1.Y)
 				{
 					rot->Yaw = -16000;
 				}
 
+				TheMenu->camRot = *rot;
+				break;
+			case CAMERA_HEAD_TRACKING:
+				if (TheMenu->m_bUsePlayerTwoAsTracker)
+				{
+					if (GetObj(PLAYER2))
+						GetObj(PLAYER2)->GetBoneRot("Head", &headRot);
+				}
+				else
+				{
+					if (GetObj(PLAYER1))
+						GetObj(PLAYER1)->GetBoneRot("Head", &headRot);
+				}
+
+				rot->Pitch = headRot.Pitch + TheMenu->m_fAdjustCustomHeadCameraY;
+				rot->Yaw = 16000 + headRot.Yaw;
+				rot->Roll = headRot.Roll / 100;
+				TheMenu->camRot = *rot;
+
+				if (TheMenu->m_bUsePlayerTwoAsTracker)
+				{
+					if (GetObj(PLAYER1))
+						GetCharacterPosition(&p2, PLAYER1);
+					if (GetObj(PLAYER2))
+						GetCharacterPosition(&p1, PLAYER2);
+				}
+				else
+				{
+					if (GetObj(PLAYER1))
+						GetCharacterPosition(&p1, PLAYER1);
+					if (GetObj(PLAYER2))
+						GetCharacterPosition(&p2, PLAYER2);
+				}
+
+				if (p2.Y < p1.Y && !TheMenu->m_bDontFlipCamera)
+				{
+					rot->Yaw = -16000 - headRot.Yaw;
+				}
 				TheMenu->camRot = *rot;
 				break;
 			}

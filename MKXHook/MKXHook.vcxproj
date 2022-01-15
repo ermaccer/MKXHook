@@ -144,6 +144,9 @@
     <ClInclude Include="code\MKCamera.h" />
     <ClInclude Include="code\MKCharacter.h" />
     <ClInclude Include="code\MKStructs.h" />
+    <ClInclude Include="code\unreal\FMatrix.h" />
+    <ClInclude Include="code\unreal\FName.h" />
+    <ClInclude Include="code\unreal\FVector.h" />
     <ClInclude Include="eDirectX11Hook.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="framework.h" />
@@ -178,6 +181,8 @@
     <ClCompile Include="code\mk10utils.cpp" />
     <ClCompile Include="code\MKCamera.cpp" />
     <ClCompile Include="code\MKCharacter.cpp" />
+    <ClCompile Include="code\unreal\FMatrix.cpp" />
+    <ClCompile Include="code\unreal\FName.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="eDirectX11Hook.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />

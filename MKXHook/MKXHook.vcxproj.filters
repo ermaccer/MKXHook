@@ -28,6 +28,12 @@
     <Filter Include="Header Files\kiero\minhook">
       <UniqueIdentifier>{77352413-b25e-4627-8400-7b72a4eb9a38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\unreal">
+      <UniqueIdentifier>{ff86ea59-5f68-4d99-82e0-9248a939e439}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\code\unreal">
+      <UniqueIdentifier>{e924cbb8-2234-400e-8771-aa3b86107f43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -129,6 +135,15 @@
     <ClInclude Include="code\eGamepadManager.h">
       <Filter>Header Files\code</Filter>
     </ClInclude>
+    <ClInclude Include="code\unreal\FName.h">
+      <Filter>Header Files\code\unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="code\unreal\FMatrix.h">
+      <Filter>Header Files\code\unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="code\unreal\FVector.h">
+      <Filter>Header Files\code\unreal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -205,6 +220,12 @@
     </ClCompile>
     <ClCompile Include="code\eGamepadManager.cpp">
       <Filter>Header Files\code</Filter>
+    </ClCompile>
+    <ClCompile Include="code\unreal\FName.cpp">
+      <Filter>Header Files\code\unreal</Filter>
+    </ClCompile>
+    <ClCompile Include="code\unreal\FMatrix.cpp">
+      <Filter>Header Files\code\unreal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 #pragma once
 #include "MKStructs.h"
+#include "unreal/FVector.h"
 
 // wrapper for old functions
 class MKCharacter {
@@ -9,5 +10,11 @@ public:
 	void SetSpeed(float speed);
 	void SetMeter(float value);
 
-	bool IsCrouching();
+	void ActivateHeadTracking();
+	void KillHeadTracking();
+
+	void SetBoneSize(const char* name, float size);
+
+	void GetBonePos(const char* name, FVector* pos);
+	void GetBoneRot(const char* name, FRotator* rot);
 };

@@ -1,11 +1,12 @@
 #pragma once
 #include "mk10utils.h"
 #include "MKCharacter.h"
+#include "unreal/FVector.h"
 
 #define GFG_GAME_INFO 0x1430DBA00
 
 
-#define MKXHOOK_VERSION "0.5.7"
+#define MKXHOOK_VERSION "0.5.8"
 
 enum  PLAYER_NUM
 {

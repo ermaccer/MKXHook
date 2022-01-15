@@ -1,5 +1,6 @@
 #pragma once
 #include "mk10.h"
+
 // generic layer for other plugins too
 class MKCamera {
 public:
