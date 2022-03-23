@@ -1,6 +1,7 @@
 #pragma once
 #include "MKStructs.h"
 #include "unreal/FVector.h"
+#include "GameInfo.h"
 
 // wrapper for old functions
 class MKCharacter {
@@ -17,4 +18,6 @@ public:
 
 	void GetBonePos(const char* name, FVector* pos);
 	void GetBoneRot(const char* name, FRotator* rot);
+
+	void ExecuteScript(MKScript* script, int function);
 };

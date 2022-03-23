@@ -57,3 +57,8 @@ void MKCharacter::GetBoneRot(const char * name, FRotator * rot)
 	mat.Rotator(rot);
 }
 
+void MKCharacter::ExecuteScript(MKScript* script, int function)
+{
+	((void(__thiscall*)(MKCharacter*, MKScript*, int, int))_addr(0x140206410))(this, script, function, 1);
+}
+

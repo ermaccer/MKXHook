@@ -56,7 +56,6 @@ bool ValidateGameVersion()
 
 void OnInitializeHook()
 {
-	SettingsMgr->Init();
 
 	if (SettingsMgr->bEnableConsoleWindow)
 	{
@@ -67,10 +66,9 @@ void OnInitializeHook()
 	}
 
 	if (SettingsMgr->bDisableAssetHashChecking)
-		printf("NOTE: With disabled hash checking you won't be able to play online\n nor use Faction Wars (private rooms still work though)\n");
+		printf("NOTE: With disabled hash checking you won't be able to play online\nnor use Faction Wars (private rooms still work though)\n");
 
 	printf("MKXHook::OnInitializeHook() | Begin!\n");
-	printf("MKXHook::OnInitializeHook() | Game detected: %s\n", GetGameName());
 	TheMenu->Initialize();
 	Notifications->Init();
 	Trampoline* tramp = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
@@ -102,27 +100,6 @@ void OnInitializeHook()
 		InjectHook(_addr(0x140085ABB), tramp->Jump(GenericDummy));
 		InjectHook(_addr(0x140208230), tramp->Jump(GenericDummy), PATCH_JUMP);
 		InjectHook(_addr(0x1402082B0), tramp->Jump(GenericDummy), PATCH_JUMP);
-	}
-
-	if (SettingsMgr->bDisableComboDamageScaling)
-	{
-		InjectHook(_addr(0x1400579EB), tramp->Jump(MK10Hooks::HookDamageMultiplier));
-		InjectHook(_addr(0x1401C27DC), tramp->Jump(MK10Hooks::HookDamageMultiplier));
-		InjectHook(_addr(0x14037791F), tramp->Jump(MK10Hooks::HookDamageMultiplier));
-		InjectHook(_addr(0x14043E5D7), tramp->Jump(MK10Hooks::HookDamageMultiplier));
-		InjectHook(_addr(0x14054B82B), tramp->Jump(MK10Hooks::HookDamageMultiplier));
-
-		InjectHook(_addr(0x14005AD7B), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
-		InjectHook(_addr(0x1401E70C8), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
-		InjectHook(_addr(0x140203ADA), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
-		InjectHook(_addr(0x1402040BC), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
-		InjectHook(_addr(0x14043E5E7), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
-		InjectHook(_addr(0x140440BE3), tramp->Jump(MK10Hooks::HookDamageMultiplierTwo));
-
-		InjectHook(_addr(0x1400561AB), tramp->Jump(MK10Hooks::HookDamageMultiplierThree));
-		InjectHook(_addr(0x14043347F), tramp->Jump(MK10Hooks::HookDamageMultiplierThree));
-		InjectHook(_addr(0x1404334FF), tramp->Jump(MK10Hooks::HookDamageMultiplierThree));
-
 	}
 
 	InjectHook(_addr(0x14135B5FB), tramp->Jump(&MKCamera::HookedSetPosition));

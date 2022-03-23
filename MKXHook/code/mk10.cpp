@@ -23,19 +23,12 @@ void SetCharacter(PLAYER_NUM plr, const char * character)
 
 void SetTrait(PLAYER_NUM plr, const char * name)
 {
-	((void(__fastcall*)(int64, const char*, const char*, int))_addr(0x1405493C0))(GetInfo(plr), name, name, 1);
+	((void(__fastcall*)(int64, const char*, const char*, int))_addr(0x1405493C0))((int64)GetInfo(plr), name, name, 1);
 }
 
 void ClearTraits(PLAYER_NUM plr)
 {
-	((void(__fastcall*)(int64))_addr(0x14054CBF0))(GetInfo(plr));
-}
-
-void SetStage(const char * stage)
-{
-	__int64 gameinfo = *(__int64*)_addr(GFG_GAME_INFO);
-
-	((void(__fastcall*)(int64, const char*))_addr(0x14049C360))(gameinfo, stage);
+	((void(__fastcall*)(int64))_addr(0x14054CBF0))((int64)GetInfo(plr));
 }
 
 void SlowGameTimeForXTicks(float speed, int ticks)
@@ -43,41 +36,24 @@ void SlowGameTimeForXTicks(float speed, int ticks)
 	((void(__fastcall*)(float, unsigned int))_addr(0x140457000))(speed, ticks);
 }
 
-void ResetStageInteractables()
-{
-	int64 gameinfo = *(__int64*)_addr(GFG_GAME_INFO);
-	int64 bgndinfo = *(int64*)(gameinfo + 0x58);
-
-	((void(__fastcall*)(int64))_addr(0x1401851C0))(bgndinfo);
-	((void(__fastcall*)(int64))_addr(0x1401852B0))(bgndinfo);
-	((void(__fastcall*)(int64))_addr(0x140184EF0))(bgndinfo);
-
-}
 
 MKCharacter* GetObj(PLAYER_NUM plr)
 {
 	return ((MKCharacter*(__fastcall*)(PLAYER_NUM))_addr(0x1405BBF60))(plr);
 }
 
-int64 GetInfo(PLAYER_NUM plr)
+PlayerInfo* GetInfo(PLAYER_NUM plr)
 {
-	int64 gameinfo = *(__int64*)_addr(GFG_GAME_INFO);
-
-	return ((int64(__fastcall*)(int64, PLAYER_NUM))_addr(0x140485F80))(gameinfo, plr);
+	return GetGameInfo()->GetInfo(plr);
 }
 
 
 void GetCharacterPosition(FVector * vec, PLAYER_NUM plr)
 {
-	int64 object = GetInfo(plr);
+	int64 object = (int64)GetInfo(plr);
 	int64 ptr = *(int64*)(object + 32);
 	((int64(__fastcall*)(int64, FVector*))_addr(0x140CAEF00))(ptr, vec);
 
-}
-
-void SetCharacterMeter(int64 obj, float meter)
-{
-	((void(__fastcall*)(int64, float))_addr(0x14055EC40))(obj, meter);
 }
 
 void HideHUD()
@@ -88,6 +64,28 @@ void HideHUD()
 void ShowHUD()
 {
 	((void(__fastcall*)(int, int))_addr(0x14047ED30))(8, 8);
+}
+
+unsigned int HashString(const char* input)
+{
+	unsigned int result;
+	int stringLength;
+	int character;
+
+	if (!input)
+		return 0;
+	stringLength = -1;
+
+	do
+		++stringLength;
+	while (input[stringLength]);
+
+	for (result = 0x811C9DC5; stringLength; --stringLength)
+	{
+		character = *(unsigned char*)input++;
+		result = character ^ (unsigned int)(0x1000193 * result);
+	}
+	return result;
 }
 
 int64 MK10Hooks::IsNPCCharacter(const char * character)
@@ -126,42 +124,40 @@ void __fastcall MK10Hooks::HookProcessStuff()
 	TheMenu->Process();
 	Notifications->Update();
 
+	MKCharacter* p1 = GetObj(PLAYER1);
+	MKCharacter* p2 = GetObj(PLAYER2);
+	PlayerInfo* p1_info = GetInfo(PLAYER1);
+	PlayerInfo* p2_info = GetInfo(PLAYER2);
+
 	if (TheMenu->m_bSlowMotion)
 		SlowGameTimeForXTicks(TheMenu->m_fSlowMotionSpeed, 10);
 
 	if (TheMenu->m_bChangePlayerScale)
 	{
-		if (GetObj(PLAYER1))
-			GetObj(PLAYER1)->SetScale(&TheMenu->m_vP1Scale);
-		if (GetObj(PLAYER2))
-			GetObj(PLAYER2)->SetScale(&TheMenu->m_vP2Scale);
+		if (p1)	p1->SetScale(&TheMenu->m_vP1Scale);
+		if (p2)	p2->SetScale(&TheMenu->m_vP2Scale);
 	}
 
 
 	if (TheMenu->m_bChangePlayerSpeed)
 	{
-		if (GetObj(PLAYER1))
-			GetObj(PLAYER1)->SetSpeed(TheMenu->m_fP1Speed);
-		if (GetObj(PLAYER2))
-			GetObj(PLAYER2)->SetSpeed(TheMenu->m_fP2Speed);
+		if (p1)	p1->SetSpeed(TheMenu->m_fP1Speed);
+		if (p2)	p2->SetSpeed(TheMenu->m_fP2Speed);
 	}
 
-	if (GetObj(PLAYER1))
+	if (p1)
 	{
-		if (TheMenu->m_bInfiniteHealthP1)
-			GetObj(PLAYER1)->SetLife(1000.0f);
-		if (TheMenu->m_bNoHealthP1)
-			GetObj(PLAYER1)->SetLife(0.0f);
-		if (TheMenu->m_bOneHealthP1)
-			GetObj(PLAYER1)->SetLife(0.01f);
-		if (TheMenu->m_bInfiniteMeterP1)
-			SetCharacterMeter(GetInfo(PLAYER1), 1.0f);
+		if (TheMenu->m_bInfiniteHealthP1)	p1->SetLife(1000.0f);
+		if (TheMenu->m_bNoHealthP1)		p1->SetLife(0.0f);
+		if (TheMenu->m_bOneHealthP1)	p1->SetLife(0.01f);
+		if (TheMenu->m_bInfiniteMeterP1) p1_info->SetMeter(1.0f);
+		if (TheMenu->m_bDisableHeadTracking) p1->KillHeadTracking();
 
-		if (TheMenu->m_bDisableHeadTracking)
+		if (TheMenu->m_bDisableComboScaling)
 		{
-			GetObj(PLAYER1)->KillHeadTracking();
+			if (p1_info)
+				p1_info->SetDamageMult(1.0f);
 		}
-
 
 		if (TheMenu->m_bAutoHideHUD)
 			HideHUD();
@@ -172,16 +168,19 @@ void __fastcall MK10Hooks::HookProcessStuff()
 		}
 
 	}
-	if (GetObj(PLAYER2))
+	if (p2)
 	{
-		if (TheMenu->m_bInfiniteHealthP2)
-			GetObj(PLAYER2)->SetLife(1000.0f);
-		if (TheMenu->m_bNoHealthP2)
-			GetObj(PLAYER2)->SetLife(0.0f);
-		if (TheMenu->m_bOneHealthP2)
-			GetObj(PLAYER2)->SetLife(0.01f);
-		if (TheMenu->m_bInfiniteMeterP2)
-			SetCharacterMeter(GetInfo(PLAYER2), 1.0f);
+		if (TheMenu->m_bInfiniteHealthP2)	p2->SetLife(1000.0f);
+		if (TheMenu->m_bNoHealthP2)	p2->SetLife(0.0f);
+		if (TheMenu->m_bOneHealthP2)	p2->SetLife(0.01f);
+		if (TheMenu->m_bInfiniteMeterP2) p2_info->SetMeter(1.0f);
+		if (TheMenu->m_bDisableHeadTracking) p2->KillHeadTracking();
+
+		if (TheMenu->m_bDisableComboScaling)
+		{
+			if (p2_info)
+				p2_info->SetDamageMult(1.0f);
+		}
 	}
 
 
@@ -255,7 +254,7 @@ void __fastcall MK10Hooks::HookStartupFightRecording()
 	((void(__fastcall*)())_addr(0x1403924C0))();
 
 	if (TheMenu->m_bStageModifier)
-		SetStage(TheMenu->szStageModifierStage);
+		GetGameInfo()->SetStage(TheMenu->szStageModifierStage);
 
 	if (TheMenu->m_bPlayer1Modifier)
 		SetCharacter(PLAYER1, TheMenu->szPlayer1ModifierCharacter);
@@ -278,8 +277,7 @@ void __fastcall MK10Hooks::HookStartupFightRecording()
 
 	}
 
-	printf("MKXHook::Info() | %s VS %s\n", ((const char*(__fastcall*)(int64))_addr(0x140553FF0))(GetInfo(PLAYER1)),
-		((const char*(__fastcall*)(int64))_addr(0x140553FF0))(GetInfo(PLAYER2)));
+	printf("MKXHook::Info() | %s VS %s\n", GetInfo(PLAYER1)->GetName(), GetInfo(PLAYER2)->GetName());
 
 }
 
@@ -294,29 +292,6 @@ int64 __fastcall MK10Hooks::HookCheckIfCharacterFemale(const char * character)
 int64 MK10Hooks::HookCheckFatalityStatus()
 {
 	return 1;
-}
-
-void __fastcall MK10Hooks::HookDamageMultiplier(int64 ptr, float mult)
-{
-	if (SettingsMgr->bDisableComboDamageScaling)
-		mult = 1.0f;
-
-	((void(__fastcall*)(int64, float))_addr(0x14055D7E0))(ptr, mult);
-}
-
-void __fastcall MK10Hooks::HookDamageMultiplierTwo(int64 ptr, float mult)
-{
-	if (SettingsMgr->bDisableComboDamageScaling)
-		mult = 1.0f;
-
-	((void(__fastcall*)(int64, float))_addr(0x14055D3B0))(ptr, mult);
-}
-
-void __fastcall MK10Hooks::HookDamageMultiplierThree(int64 ptr, float mult)
-{
-	if (SettingsMgr->bDisableComboDamageScaling)
-		mult = 1.0f;
-	((void(__fastcall*)(int64, float))_addr(0x140549CE0))(ptr, mult);
 }
 
 int64 __fastcall MK10Hooks::HookGetCharacterVictory(const char * name, const char * packageID, char * packageName, int packageBuffer)

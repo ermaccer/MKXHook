@@ -211,18 +211,6 @@ LRESULT __stdcall eDirectX11Hook::WndProc(const HWND hWnd, UINT uMsg, WPARAM wPa
 	case WM_KEYDOWN:
 		if (wParam == SettingsMgr->iHookMenuOpenKey)
 			TheMenu->m_bIsActive ^= 1;
-		switch (wParam)
-		{
-		case VK_F5:
-			TheMenu->m_bSlowMotion ^= 1;
-			break;
-		case VK_F2:
-			if (TheMenu->m_bHookDispatch)
-				TheMenu->m_bFreezeWorld ^= 1;
-			break;
-		default:
-			break;
-		}
 		break;
 	default:
 		break;

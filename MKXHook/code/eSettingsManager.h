@@ -1,5 +1,5 @@
 #pragma once
-
+#include <Windows.h>
 
 // as usual, pluginmh/mugenhook
 
@@ -12,13 +12,16 @@ public:
 	bool bEnableNPCFatalities;
 	bool bDisableAssetHashChecking;
 	bool bEnableConsoleWindow;
-	bool bDisableComboDamageScaling;
 	bool bDisableSweatEffects;
 	bool bEnableNPCVictoryPoses;
 
 	bool bEnableGamepadSupport;
 
 	int iHookMenuOpenKey;
+	int iToggleCustomCamKey;
+	int iToggleSlowMoKey = VK_F5;
+	int iToggleFreezeWorldKey = VK_F2;
+	int iResetStageInteractablesKey;
 	// free camera keys
 	int iFreeCameraKeyXPlus;
 	int iFreeCameraKeyXMinus;
@@ -42,6 +45,7 @@ public:
 	float fMenuScale;
 
 	void SaveSettings();
+	void ResetKeys();
 };
 
 extern eSettingsManager* SettingsMgr;
