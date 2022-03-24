@@ -324,3 +324,8 @@ void MK10Hooks::HookDispatch(int64 ptr, int a2)
 	else
 		((int64(__fastcall*)(int64, int))_addr(0x140875590))(ptr, a2);
 }
+
+void MK10Hooks::HookDisableLetterBox()
+{
+	RunScriptFunction("fg_utils.mko", HashString("SnapLetterBoxOff"));
+}

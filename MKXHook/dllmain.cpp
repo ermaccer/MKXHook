@@ -113,6 +113,9 @@ void OnInitializeHook()
 	//gamepad
 	if (SettingsMgr->bEnableGamepadSupport)
 		InjectHook(_addr(0x14216922E), tramp->Jump(XInputGetState_Hook), PATCH_JUMP);
+	
+	// todo
+	//InjectHook(_addr(0x1408678FF), tramp->Jump(MK10Hooks::HookDisableLetterBox));
 }
 
 

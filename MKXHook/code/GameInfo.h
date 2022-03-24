@@ -31,4 +31,6 @@ public:
 
 MKScript* GetScript(const char* name);
 
+void RunScriptFunction(const char* name, unsigned int funcID);
+
 FGGameInfo* GetGameInfo();

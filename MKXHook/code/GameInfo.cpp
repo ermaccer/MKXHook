@@ -35,6 +35,11 @@ MKScript* GetScript(const char* name)
 	return nullptr;
 }
 
+void RunScriptFunction(const char* name, unsigned int funcID)
+{
+	((void(__fastcall*)(const char*, unsigned int))_addr(0x14047DB80))(name, funcID);
+}
+
 FGGameInfo* GetGameInfo()
 {
 	return *(FGGameInfo**)_addr(GFG_GAME_INFO);

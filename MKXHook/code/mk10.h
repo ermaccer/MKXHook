@@ -41,6 +41,8 @@ namespace MK10Hooks {
 	int64 __fastcall HookGetCharacterVictory(const char* name, const char* packageID, char* packageName, int packageBuffer);
 
 	void   HookDispatch(int64 ptr, int a2);
+
+	void HookDisableLetterBox();
 }
 
 
