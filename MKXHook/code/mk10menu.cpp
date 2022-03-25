@@ -1028,6 +1028,7 @@ void MK10Menu::DrawScriptReference()
 		ImGui::BulletText("BrutalityVictory");
 		ImGui::BulletText("RoundOverWinnerTaunt");
 		ImGui::BulletText("RoundOverGetupAny");
+		ImGui::BulletText("RoundOverWinnerWalkaway");
 		break;
 	default:
 		break;
