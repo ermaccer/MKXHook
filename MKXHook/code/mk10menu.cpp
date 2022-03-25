@@ -706,9 +706,9 @@ void MK10Menu::DrawCheatsTab()
 
 	ImGui::Text("One Health\n");
 	ImGui::NextColumn();
-	ImGui::Checkbox("P1##1health", &m_bNoHealthP1);
+	ImGui::Checkbox("P1##1health", &m_bOneHealthP1);
 	ImGui::SameLine();
-	ImGui::Checkbox("P2##1health", &m_bNoHealthP2);
+	ImGui::Checkbox("P2##1health", &m_bOneHealthP2);
 	ImGui::NextColumn();
 
 
