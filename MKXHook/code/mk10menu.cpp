@@ -289,6 +289,12 @@ void MK10Menu::Draw()
 			m_bSubmenuActive[SUBMENU_SETTINGS] = true;
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Help"))
+		{
+			if (ImGui::MenuItem("Script Reference"))
+				m_bSubmenuActive[SUBMENU_SCRIPT] = true;
+			ImGui::EndMenu();
+		}
 	}
 	ImGui::EndMenuBar();
 
@@ -345,6 +351,9 @@ void MK10Menu::Draw()
 
 	if (m_bSubmenuActive[SUBMENU_SETTINGS])
 		DrawSettings();
+
+	if (m_bSubmenuActive[SUBMENU_SCRIPT])
+		DrawScriptReference();
 }
 
 void MK10Menu::UpdateControls()
@@ -965,6 +974,63 @@ void MK10Menu::DrawSettings()
 		Notifications->PushNotification("Settings saved to MKXHook.ini and mkxhook_user.ini!");
 		eDirectX11Hook::ms_bShouldReloadFonts = true;
 		SettingsMgr->SaveSettings();
+	}
+
+	ImGui::EndChild();
+
+	ImGui::End();
+}
+
+void MK10Menu::DrawScriptReference()
+{
+	ImGui::SetNextWindowPos({ ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y / 2.0f }, ImGuiCond_Once, { 0.5f, 0.5f });
+	ImGui::SetNextWindowSize({ 54 * ImGui::GetFontSize(), 54 * ImGui::GetFontSize() }, ImGuiCond_Once);
+	ImGui::Begin("Script Reference", &m_bSubmenuActive[SUBMENU_SCRIPT]);
+
+	static int secID = 0;
+	static const char* scriptSections[] = {
+		"General",
+		"Usage",
+	};
+
+	enum eScriptRef {
+		GEN,
+		USG,
+	};
+
+	ImGui::BeginChild("##settings", { 12 * ImGui::GetFontSize(), 0 }, true);
+
+	for (int n = 0; n < IM_ARRAYSIZE(scriptSections); n++)
+	{
+		bool is_selected = (secID == n);
+		if (ImGui::Selectable(scriptSections[n], is_selected))
+			secID = n;
+		if (is_selected)
+			ImGui::SetItemDefaultFocus();
+	}
+
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+	ImGui::BeginChild("##content", { 0, -ImGui::GetFrameHeightWithSpacing() });
+
+	switch (secID)
+	{
+	case GEN:
+		ImGui::TextWrapped("You can find script functions in the MKScript folder. Open .mko file of interest with notepad or"
+			" any hex editor. To find functions that can be executed look for strings starting with 'Rx', 'pFunc','p'.");
+		break;
+	case USG:
+		ImGui::BulletText("On Player1 - selected function will execute on Player 1 object.\nUse with character scripts or FightEngine");
+		ImGui::BulletText("On Player2 - selected function will execute on Player 2 object.\nUse with character scripts or FightEngine");
+
+		ImGui::TextWrapped("Some common player functions:");
+		ImGui::BulletText("BrutalityVictory");
+		ImGui::BulletText("RoundOverWinnerTaunt");
+		ImGui::BulletText("RoundOverGetupAny");
+		break;
+	default:
+		break;
 	}
 
 	ImGui::EndChild();

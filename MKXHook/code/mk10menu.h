@@ -135,6 +135,8 @@ public:
 
 	void DrawSettings();
 
+	void DrawScriptReference();
+
 	void DrawKeyBind(char* name, int* var);
 	void KeyBind(int* var, char* bindName, char* name);
 
