@@ -9,7 +9,8 @@
 #include <string>
 #include "eNotifManager.h"
 #include "..\eDirectX11Hook.h"
-
+#include "helper\eMouse.h"
+#include "MKCamera.h"
 
 std::vector<std::string> P1Traits;
 std::vector<std::string> P2Traits;
@@ -406,6 +407,74 @@ void MK10Menu::UpdateControls()
 
 }
 
+void MK10Menu::UpdateFreecam()
+{
+	if (TheMenu->m_bFreeCam)
+	{
+		if (TheCamera)
+		{
+			FVector fwd = TheCamera->GetMatrix().GetForward();
+			FVector strafe = TheCamera->GetMatrix().GetRight();
+			FVector up = TheCamera->GetMatrix().GetUp();
+
+			// forward
+
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyXPlus))
+				TheMenu->camPos += fwd * TheMenu->m_fFreeCameraSpeed * 1;
+
+
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyXMinus))
+				TheMenu->camPos += fwd * TheMenu->m_fFreeCameraSpeed * -1;
+
+			// strafe
+
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYPlus))
+				TheMenu->camPos += strafe * TheMenu->m_fFreeCameraSpeed * 1;
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYMinus))
+				TheMenu->camPos += strafe * TheMenu->m_fFreeCameraSpeed * -1;
+
+			// up
+
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyZPlus))
+				TheMenu->camPos += up * TheMenu->m_fFreeCameraSpeed * 1;
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyZMinus))
+				TheMenu->camPos += up * TheMenu->m_fFreeCameraSpeed * -1;
+
+
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYawMinus))
+				TheMenu->camRot.Yaw -= TheMenu->m_nFreeCameraRotationSpeed;
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYawPlus))
+				TheMenu->camRot.Yaw += TheMenu->m_nFreeCameraRotationSpeed;
+
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyRollMinus))
+				TheMenu->camRot.Roll -= TheMenu->m_nFreeCameraRotationSpeed;
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyRollPlus))
+				TheMenu->camRot.Roll += TheMenu->m_nFreeCameraRotationSpeed;
+
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyPitchMinus))
+				TheMenu->camRot.Pitch -= TheMenu->m_nFreeCameraRotationSpeed;
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyPitchPlus))
+				TheMenu->camRot.Pitch += TheMenu->m_nFreeCameraRotationSpeed;
+
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyFOVMinus))
+				TheMenu->camFov -= 1.0f;
+			if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyFOVPlus))
+				TheMenu->camFov += 1.0f;
+
+
+			// mouse
+			{
+				if (!TheMenu->m_bIsActive && TheMenu->m_bMouseControl)
+				{
+					TheMenu->camRot.Pitch += eMouse::GetDeltaY();
+					TheMenu->camRot.Yaw += eMouse::GetDeltaX();
+				}
+			}
+		}
+
+	}
+}
+
 void MK10Menu::DrawCharacterTab()
 {
 	ImGui::Checkbox("Enable Player 1 Modifier", &m_bPlayer1Modifier);
@@ -638,6 +707,7 @@ void MK10Menu::DrawCameraTab()
 
 		ImGui::InputFloat("Freecam Speed", &m_fFreeCameraSpeed);
 		ImGui::InputInt("Freecam Rotation Speed", &m_nFreeCameraRotationSpeed);
+		ImGui::Checkbox("Mouse Control", &m_bMouseControl);
 	}
 
 
@@ -852,13 +922,15 @@ void MK10Menu::DrawSettings()
 	static const char* settingNames[] = {
 		"Menu",
 		"INI",
-		"Keys"
+		"Keys",
+		"Mouse"
 	};
 
 	enum eSettings {
 		MENU,
 		INI,
 		KEYS,
+		MOUSE
 	};
 
 	ImGui::BeginChild("##settings", { 12 * ImGui::GetFontSize(), 0 }, true);
@@ -882,7 +954,9 @@ void MK10Menu::DrawSettings()
 	case MENU:
 		ImGui::TextWrapped("All user settings are saved to mkxhook_user.ini.");
 		ImGui::Text("Menu Scale");
+		ImGui::PushItemWidth(-FLT_MIN);
 		ImGui::InputFloat("", &SettingsMgr->fMenuScale);
+		ImGui::PopItemWidth();
 		break;
 	case INI:
 		ImGui::TextWrapped("These settings control MKXHook.ini options. Any changes require game restart to take effect.");
@@ -904,6 +978,8 @@ void MK10Menu::DrawSettings()
 		ImGui::SameLine(); ShowHelpMarker("Rain, Baraka and Corrupted Shinnok will correctly use 'Finish Him'.");
 		ImGui::Checkbox("Disable Asset Checking", &SettingsMgr->bDisableAssetHashChecking);
 		ImGui::SameLine(); ShowHelpMarker("Allows to freely replace files without the need of updating toc data.");
+		ImGui::Checkbox("Disable Cinematics Letterboxing", &SettingsMgr->bDisableCinematicLetterboxing);
+		ImGui::SameLine(); ShowHelpMarker("Removes black bars from cutscenes.");
 
 		break;
 	case KEYS:
@@ -937,12 +1013,12 @@ void MK10Menu::DrawSettings()
 		KeyBind(&SettingsMgr->iFreeCameraKeyRollPlus, "Roll+", "r_plus");
 		KeyBind(&SettingsMgr->iFreeCameraKeyRollMinus, "Roll-", "r_minus");
 
-		KeyBind(&SettingsMgr->iFreeCameraKeyXPlus, "X+", "x_plus");
-		KeyBind(&SettingsMgr->iFreeCameraKeyXMinus, "X-", "x_minus");
-		KeyBind(&SettingsMgr->iFreeCameraKeyYPlus, "Y+", "y_plus");
-		KeyBind(&SettingsMgr->iFreeCameraKeyYMinus, "Y-", "y_minus");
-		KeyBind(&SettingsMgr->iFreeCameraKeyZPlus, "Z+", "z_plus");
-		KeyBind(&SettingsMgr->iFreeCameraKeyZMinus, "Z-", "z_minus");
+		KeyBind(&SettingsMgr->iFreeCameraKeyXPlus, "Forward", "x_plus");
+		KeyBind(&SettingsMgr->iFreeCameraKeyXMinus, "Back", "x_minus");
+		KeyBind(&SettingsMgr->iFreeCameraKeyYPlus, "Left", "y_plus");
+		KeyBind(&SettingsMgr->iFreeCameraKeyYMinus, "Right", "y_minus");
+		KeyBind(&SettingsMgr->iFreeCameraKeyZPlus, "Up", "z_plus");
+		KeyBind(&SettingsMgr->iFreeCameraKeyZMinus, "Down", "z_minus");
 
 
 		ImGui::Separator();
@@ -963,6 +1039,15 @@ void MK10Menu::DrawSettings()
 			}
 
 		}
+		break;
+	case MOUSE:
+		ImGui::TextWrapped("All user settings are saved to mk9hook_user.ini.");
+		ImGui::Text("Sensitivity");
+		ImGui::PushItemWidth(-FLT_MIN);
+		ImGui::SliderInt("", &SettingsMgr->mouse.sens, 1, 50);
+		ImGui::PopItemWidth();
+		ImGui::Checkbox("Invert X", &SettingsMgr->mouse.invert_x);
+		ImGui::Checkbox("Invert Y", &SettingsMgr->mouse.invert_y);
 		break;
 	default:
 		break;

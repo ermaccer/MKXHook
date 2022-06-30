@@ -7,7 +7,7 @@
 #include "eNotifManager.h"
 #include "MKCamera.h"
 #include <imgui.h>
-
+#include "helper/eMouse.h"
 
 const char * GetGameName()
 {
@@ -34,6 +34,11 @@ void ClearTraits(PLAYER_NUM plr)
 void SlowGameTimeForXTicks(float speed, int ticks)
 {
 	((void(__fastcall*)(float, unsigned int))_addr(0x140457000))(speed, ticks);
+}
+
+void ExecuteScriptFunction(const char* source, unsigned int hash)
+{
+	((void(__fastcall*)(const char*, unsigned int))_addr(0x14047DB80))(source, hash);
 }
 
 
@@ -123,6 +128,7 @@ void __fastcall MK10Hooks::HookProcessStuff()
 {
 	TheMenu->Process();
 	Notifications->Update();
+	eMouse::UpdateMouse();
 
 	MKCharacter* p1 = GetObj(PLAYER1);
 	MKCharacter* p2 = GetObj(PLAYER2);
@@ -190,41 +196,8 @@ void __fastcall MK10Hooks::HookProcessStuff()
 		*(int*)(_addr(0x143316850) + 0x1964) = 91;
 	}
 
-	if (TheMenu->m_bFreeCam)
-	{
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyXPlus))
-			TheMenu->camPos.X += TheMenu->m_fFreeCameraSpeed;
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyXMinus))
-			TheMenu->camPos.X -= TheMenu->m_fFreeCameraSpeed;
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYPlus))
-			TheMenu->camPos.Y += TheMenu->m_fFreeCameraSpeed;
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYMinus))
-			TheMenu->camPos.Y -= TheMenu->m_fFreeCameraSpeed;
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyZPlus))
-			TheMenu->camPos.Z += TheMenu->m_fFreeCameraSpeed;
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyZMinus))
-			TheMenu->camPos.Z -= TheMenu->m_fFreeCameraSpeed;
-
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYawMinus))
-			TheMenu->camRot.Yaw -= TheMenu->m_nFreeCameraRotationSpeed;
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyYawPlus))
-			TheMenu->camRot.Yaw += TheMenu->m_nFreeCameraRotationSpeed;
-
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyRollMinus))
-			TheMenu->camRot.Roll -= TheMenu->m_nFreeCameraRotationSpeed;
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyRollPlus))
-			TheMenu->camRot.Roll += TheMenu->m_nFreeCameraRotationSpeed;
-
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyPitchMinus))
-			TheMenu->camRot.Pitch -= TheMenu->m_nFreeCameraRotationSpeed;
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyPitchPlus))
-			TheMenu->camRot.Pitch += TheMenu->m_nFreeCameraRotationSpeed;
-
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyFOVMinus))
-			TheMenu->camFov -= 1.0f;
-		if (GetAsyncKeyState(SettingsMgr->iFreeCameraKeyFOVPlus))
-			TheMenu->camFov += 1.0f;
-	}
+	
+	TheMenu->UpdateFreecam();
 
 	if (TheMenu->m_bForceCameraUpdate)
 	{
@@ -237,6 +210,10 @@ void __fastcall MK10Hooks::HookProcessStuff()
 
 	}
 
+	if (SettingsMgr->bDisableCinematicLetterboxing)
+	{
+		ExecuteScriptFunction("fg_utils.mko", HashString("SnapLetterBoxOff"));
+	}
 
 
 	((void(__fastcall*)())_addr(0x140CB2BA0))();

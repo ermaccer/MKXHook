@@ -16,6 +16,7 @@ void eSettingsManager::Init()
 	bEnable60FPSFrontend = ini.ReadBoolean("Settings", "bEnable60FPSPatch", true);
 	bDisableSweatEffects = ini.ReadBoolean("Settings", "bDisableSweatEffects", false);
 	bEnableGamepadSupport = ini.ReadBoolean("Settings", "bEnableGamepadSupport", true);
+	bDisableCinematicLetterboxing = ini.ReadBoolean("Settings", "bDisableCinematicLetterboxing", false);
 
 	iToggleCustomCamKey = user.ReadInteger("Settings", "iToggleCustomCamKey", 0);
 
@@ -100,6 +101,11 @@ void eSettingsManager::Init()
 	if (fMenuScale < 1.0f)
 		fMenuScale = 1.0f;
 
+
+	mouse.sens = user.ReadInteger("Mouse", "Sensitivity", 10);
+	mouse.invert_y = user.ReadBoolean("Mouse", "InvertY", false);
+	mouse.invert_x = user.ReadBoolean("Mouse", "InvertX", false);
+
 }
 
 void eSettingsManager::SaveSettings()
@@ -123,6 +129,9 @@ void eSettingsManager::SaveSettings()
 	user.WriteInteger("Settings", "iFreeCameraKeyFOVPlus", iFreeCameraKeyFOVPlus);
 	user.WriteInteger("Settings", "iFreeCameraKeyFOVMinus", iFreeCameraKeyFOVMinus);
 	user.WriteInteger("Settings", "iResetStageInteractablesKey", iResetStageInteractablesKey);
+	user.WriteInteger("Mouse", "Sensitivity", mouse.sens);
+	user.WriteBoolean("Mouse", "InvertY", mouse.invert_y);
+	user.WriteBoolean("Mouse", "InvertX", mouse.invert_x);
 
 	CIniReader ini("");
 	ini.WriteBoolean("Settings", "bEnableGamepadSupport", bEnableGamepadSupport);
@@ -133,6 +142,7 @@ void eSettingsManager::SaveSettings()
 	ini.WriteBoolean("Settings", "bFixNPCGenderFatalityMessage", bFixNPCGenderFatalityMessage);
 	ini.WriteBoolean("Settings", "bEnableNPCVictoryPoses", bEnableNPCVictoryPoses);
 	ini.WriteBoolean("Settings", "bEnableNPCFatalities", bEnableNPCFatalities);
+	ini.WriteBoolean("Settings", "bDisableCinematicLetterboxing", bDisableCinematicLetterboxing);
 
 }
 

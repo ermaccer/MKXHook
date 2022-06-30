@@ -40,7 +40,7 @@ public:
 	bool     m_bPressingKey = false;
 	bool	 m_bSlowMotion = false;
 	bool     m_bFreezeWorld = false;
-	bool	 m_bIsFocused = false;
+	bool	 m_bIsFocused = true;
 	bool	 m_bHookDispatch = false;
 	bool	 m_bForceCameraUpdate = false;
 	bool	 m_bCustomCameraPos = false;
@@ -54,6 +54,7 @@ public:
 	bool	 m_bDontFlipCamera = false;
 	bool	 m_bDisableHeadTracking = false;
 	bool	 m_bUsePlayerTwoAsTracker = false;
+	bool	 m_bMouseControl = false;
 
 	// cheats
 	bool m_bStopTimer = false;
@@ -121,6 +122,7 @@ public:
 	void Process();
 	void Draw();
 	void UpdateControls();
+	void UpdateFreecam();
 
 	void DrawCharacterTab();
 	void DrawStageTab();

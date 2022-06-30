@@ -288,3 +288,10 @@ void MKCamera::HookedSetRotation(FRotator * rot)
 	}
 }
 
+FMatrix MKCamera::GetMatrix()
+{
+	FRotator rot = *(FRotator*)(this + 0x420);
+	FMatrix mat(&rot);
+	return mat;
+}
+

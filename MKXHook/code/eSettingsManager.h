@@ -3,6 +3,12 @@
 
 // as usual, pluginmh/mugenhook
 
+struct eMouseSettings {
+	int sens;
+	bool invert_y;
+	bool invert_x;
+};
+
 class eSettingsManager {
 public:
 	void Init();
@@ -14,7 +20,7 @@ public:
 	bool bEnableConsoleWindow;
 	bool bDisableSweatEffects;
 	bool bEnableNPCVictoryPoses;
-
+	bool bDisableCinematicLetterboxing;
 	bool bEnableGamepadSupport;
 
 	int iHookMenuOpenKey;
@@ -41,6 +47,7 @@ public:
 	int iFreeCameraKeyFOVMinus;
 
 
+	eMouseSettings mouse;
 
 	float fMenuScale;
 

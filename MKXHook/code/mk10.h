@@ -3,17 +3,19 @@
 #include "mk10utils.h"
 #include "MKCharacter.h"
 #include "unreal/FVector.h"
-
+#include "unreal/FRotator.h"
 
 #define GFG_GAME_INFO 0x1430DBA00
 
-#define MKXHOOK_VERSION "0.5.9"
+#define MKXHOOK_VERSION "0.6.0"
 
 const char* GetGameName();
 void SetCharacter(PLAYER_NUM plr, const char* character);
 void SetTrait(PLAYER_NUM plr, const char* name);
 void ClearTraits(PLAYER_NUM plr);
 void SlowGameTimeForXTicks(float speed, int ticks);
+void ExecuteScriptFunction(const char* source, unsigned int hash);
+
 
 MKCharacter* GetObj(PLAYER_NUM plr);
 PlayerInfo* GetInfo(PLAYER_NUM plr);

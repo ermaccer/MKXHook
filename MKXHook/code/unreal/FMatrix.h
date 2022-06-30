@@ -1,10 +1,17 @@
 #pragma once
-#include "..\mk10.h"
+#include "FRotator.h"
+#include "FVector.h"
 
-struct FMatrix
-{
-	float M[4][4];
+class FMatrix {
+public:
+	float M[4][4] = {};
+
+	void Rotator(FRotator* dest);
 
 	FMatrix();
-	void Rotator(FRotator* dest);
+	FMatrix(FRotator*);
+
+	FVector GetRight();
+	FVector GetForward();
+	FVector GetUp();
 };
