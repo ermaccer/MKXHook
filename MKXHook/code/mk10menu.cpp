@@ -1041,7 +1041,7 @@ void MK10Menu::DrawSettings()
 		}
 		break;
 	case MOUSE:
-		ImGui::TextWrapped("All user settings are saved to mk9hook_user.ini.");
+		ImGui::TextWrapped("All user settings are saved to mkxhook_user.ini.");
 		ImGui::Text("Sensitivity");
 		ImGui::PushItemWidth(-FLT_MIN);
 		ImGui::SliderInt("", &SettingsMgr->mouse.sens, 1, 50);
