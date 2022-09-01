@@ -62,18 +62,24 @@ public:
 	bool m_bInfiniteHealthP2 = false;
 	bool m_bInfiniteMeterP1 = false;
 	bool m_bInfiniteMeterP2 = false;
+	bool m_bZeroMeterP1 = false;
+	bool m_bZeroMeterP2 = false;
 	bool m_bNoHealthP1 = false;
 	bool m_bNoHealthP2 = false;
 	bool m_bOneHealthP1 = false;
 	bool m_bOneHealthP2 = false;
-
-
+	bool m_bInfiniteRunP1 = false;
+	bool m_bInfiniteRunP2 = false;
+	bool m_bNoRunP1 = false;
+	bool m_bNoRunP2 = false;
 	bool	m_bChangePlayerSpeed = false;
 	bool	m_bChangePlayerScale = false;
 	bool	m_bPlayer1Modifier = false;
 	bool	m_bPlayer2Modifier = false;
 	bool	m_bPlayer1CustomTrait = false;
 	bool	m_bPlayer2CustomTrait = false;
+	bool	m_bAIDroneModifierP1 = false;
+	bool	m_bAIDroneModifierP2 = false;
 
 	bool    m_bDisableComboScaling = false;
 
@@ -117,6 +123,9 @@ public:
 	char szPlayer2Trait[128] = {};
 	char szPlayer1Bone[128] = {};
 	char szPlayer2Bone[128] = {};
+	char szPlayer1AI[128] = {};
+	char szPlayer2AI[128] = {};
+
 
 	void Initialize();
 	void Process();
@@ -133,7 +142,7 @@ public:
 	void DrawCheatsTab();
 	void DrawMiscTab();
 	void DrawScriptTab();
-
+	void DrawAITab();
 
 	void DrawSettings();
 

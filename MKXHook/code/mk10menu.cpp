@@ -228,6 +228,18 @@ const char* szCameraModes[TOTAL_CUSTOM_CAMERAS] = {
 	"Head Perspective"
 };
 
+const char* szAI[] = {
+	"AI_ButtonMasher.mko",
+	"AI_DebugOnlineButtonMasher.mko",
+	"AI_Dummy.mko",
+	"AI_Flying.mko",
+	"AI_Normal.mko",
+	"AI_SingleMove.mko",
+	"AI_Test.mko",
+	"AI_Training.mko",
+	"AI_Verifier.mko",
+};
+
 int GetCamMode(const char* mode)
 {
 	for (int i = 0; i < TOTAL_CUSTOM_CAMERAS; i++)
@@ -271,6 +283,8 @@ void MK10Menu::Initialize()
 	sprintf(szPlayer2Trait, szTraits[0]);
 	sprintf(szPlayer1Bone, szBones[0]);
 	sprintf(szPlayer2Bone, szBones[0]);
+	sprintf(szPlayer1AI, szAI[0]);
+	sprintf(szPlayer2AI, szAI[0]);
 }
 
 void MK10Menu::Process()
@@ -301,32 +315,32 @@ void MK10Menu::Draw()
 
 	if (ImGui::BeginTabBar("##tabs"))
 	{
-		if (ImGui::BeginTabItem("Character Modifier"))
+		if (ImGui::BeginTabItem("Character"))
 		{
 			DrawCharacterTab();
 			ImGui::EndTabItem();
 		}
-		if (ImGui::BeginTabItem("Variation Manager"))
+		if (ImGui::BeginTabItem("Variation"))
 		{
 			DrawVariationsTab();
 			ImGui::EndTabItem();
 		}
-		if (ImGui::BeginTabItem("Stage Modifier"))
+		if (ImGui::BeginTabItem("Stage"))
 		{
 			DrawStageTab();
 			ImGui::EndTabItem();
 		}
-		if (ImGui::BeginTabItem("Player Control"))
+		if (ImGui::BeginTabItem("Player"))
 		{
 			DrawPlayerTab();
 			ImGui::EndTabItem();
 		}
-		if (ImGui::BeginTabItem("Speed Modifier"))
+		if (ImGui::BeginTabItem("Speed"))
 		{
 			DrawSpeedTab();
 			ImGui::EndTabItem();
 		}
-		if (ImGui::BeginTabItem("Camera Control"))
+		if (ImGui::BeginTabItem("Camera"))
 		{
 			DrawCameraTab();
 			ImGui::EndTabItem();
@@ -339,6 +353,11 @@ void MK10Menu::Draw()
 		if (ImGui::BeginTabItem("Script"))
 		{
 			DrawScriptTab();
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("AI"))
+		{
+			DrawAITab();
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem("Misc."))
@@ -764,7 +783,6 @@ void MK10Menu::DrawCameraTab()
 
 void MK10Menu::DrawCheatsTab()
 {
-	ImGui::Separator();
 	ImGui::Columns(2);
 	ImGui::SetColumnWidth(0, 11.5f * ImGui::GetFontSize());
 
@@ -798,9 +816,31 @@ void MK10Menu::DrawCheatsTab()
 	ImGui::Checkbox("P2##super", &m_bInfiniteMeterP2);
 	ImGui::NextColumn();
 
+	ImGui::Text("Zero Meter\n");
+	ImGui::NextColumn();
+	ImGui::Checkbox("P1##0super", &m_bZeroMeterP1);
+	ImGui::SameLine();
+	ImGui::Checkbox("P2##0super", &m_bZeroMeterP2);
+	ImGui::NextColumn();
+
+
+	ImGui::Text("Infinite Energy\n");
+	ImGui::NextColumn();
+	ImGui::Checkbox("P1##run", &m_bInfiniteRunP1);
+	ImGui::SameLine();
+	ImGui::Checkbox("P2##run", &m_bInfiniteRunP2);
+	ImGui::NextColumn();
+
+	ImGui::Text("Zero Energy\n");
+	ImGui::NextColumn();
+	ImGui::Checkbox("P1##nrun", &m_bNoRunP1);
+	ImGui::SameLine();
+	ImGui::Checkbox("P2##nrun", &m_bNoRunP2);
+	ImGui::NextColumn();
+
 	ImGui::Text("Freeze Timer\n");
 	ImGui::NextColumn();
-	ImGui::Checkbox("Enable##time", &m_bStopTimer);
+	ImGui::Checkbox("##time", &m_bStopTimer);
 	ImGui::NextColumn();
 
 	ImGui::Columns(1);
@@ -831,6 +871,11 @@ void MK10Menu::DrawMiscTab()
 			((void(__fastcall*)(int64))_addr(0x1404A2150))(gallery);
 			Notifications->SetNotificationTime(5500);
 			Notifications->PushNotification("Costumes should be unlocked now, check costumes list in select screen.");
+		}
+		else
+		{
+			Notifications->SetNotificationTime(3500);
+			Notifications->PushNotification("Execute this option in the Crypt.");
 		}
 
 	}
@@ -910,6 +955,43 @@ void MK10Menu::DrawScriptTab()
 
 	if (ImGui::Button("Clear All"))
 		m_vKeyBinds.clear();
+}
+
+void MK10Menu::DrawAITab()
+{
+	ImGui::Checkbox("Change Player 1 AI", &m_bAIDroneModifierP1);
+
+	if (ImGui::BeginCombo("Player 1 AI", szPlayer1AI))
+	{
+		for (int n = 0; n < IM_ARRAYSIZE(szAI); n++)
+		{
+			bool is_selected = (szPlayer1AI == szAI[n]);
+			if (ImGui::Selectable(szAI[n], is_selected))
+				sprintf(szPlayer1AI, szAI[n]);
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();
+
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::Separator();
+	ImGui::Checkbox("Change Player 2 AI", &m_bAIDroneModifierP2);
+
+	if (ImGui::BeginCombo("Player 2 AI", szPlayer2AI))
+	{
+		for (int n = 0; n < IM_ARRAYSIZE(szAI); n++)
+		{
+			bool is_selected = (szPlayer2AI == szAI[n]);
+			if (ImGui::Selectable(szAI[n], is_selected))
+				sprintf(szPlayer2AI, szAI[n]);
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();
+
+		}
+		ImGui::EndCombo();
+	}
+	ImGui::Separator();
 }
 
 void MK10Menu::DrawSettings()

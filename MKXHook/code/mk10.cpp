@@ -157,7 +157,17 @@ void __fastcall MK10Hooks::HookProcessStuff()
 		if (TheMenu->m_bNoHealthP1)		p1->SetLife(0.0f);
 		if (TheMenu->m_bOneHealthP1)	p1->SetLife(0.01f);
 		if (TheMenu->m_bInfiniteMeterP1) p1_info->SetMeter(1.0f);
+		if (TheMenu->m_bZeroMeterP1) p1_info->SetMeter(0.0f);
 		if (TheMenu->m_bDisableHeadTracking) p1->KillHeadTracking();
+		if (TheMenu->m_bInfiniteRunP1) p1_info->SetEnergy(100.0f);
+		if (TheMenu->m_bNoRunP1) p1_info->SetEnergy(0.0f);
+
+
+		if (TheMenu->m_bAIDroneModifierP1)
+		{
+			if (AIDrone* drone = p1_info->GetDrone())
+				drone->Set(TheMenu->szPlayer1AI);
+		}
 
 		if (TheMenu->m_bDisableComboScaling)
 		{
@@ -181,6 +191,14 @@ void __fastcall MK10Hooks::HookProcessStuff()
 		if (TheMenu->m_bOneHealthP2)	p2->SetLife(0.01f);
 		if (TheMenu->m_bInfiniteMeterP2) p2_info->SetMeter(1.0f);
 		if (TheMenu->m_bDisableHeadTracking) p2->KillHeadTracking();
+		if (TheMenu->m_bInfiniteRunP2) p2_info->SetEnergy(100.0f);
+		if (TheMenu->m_bNoRunP2) p2_info->SetEnergy(0.0f);
+
+		if (TheMenu->m_bAIDroneModifierP2)
+		{
+			if (AIDrone* drone = p2_info->GetDrone())
+				drone->Set(TheMenu->szPlayer2AI);
+		}
 
 		if (TheMenu->m_bDisableComboScaling)
 		{

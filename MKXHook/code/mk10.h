@@ -7,7 +7,7 @@
 
 #define GFG_GAME_INFO 0x1430DBA00
 
-#define MKXHOOK_VERSION "0.6.0"
+#define MKXHOOK_VERSION "0.6.1"
 
 const char* GetGameName();
 void SetCharacter(PLAYER_NUM plr, const char* character);
